@@ -1,2788 +1,1945 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Manajemen Kuliah</title>
-
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card2: #243248;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --border: #334155;
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --white: #ffffff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       LOADING
-    ========================= */
-
-    #loading {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .loading-box {
-      text-align: center;
-    }
-
-    .spinner {
-      width: 45px;
-      height: 45px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: auto auto 15px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* =========================
-       HEADER
-    ========================= */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      max-width: 1200px;
-      margin: auto;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      background: var(--primary);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 21px;
-    }
-
-    .brand h1 {
-      font-size: 18px;
-    }
-
-    .brand p {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .admin-btn {
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      padding: 9px 13px;
-      border-radius: 9px;
-    }
-
-    .admin-btn:hover {
-      background: var(--card2);
-    }
-
-    /* =========================
-       NAVIGATION
-    ========================= */
-
-    nav {
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 20px 15px;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-    }
-
-    nav button {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      padding: 9px 14px;
-      border-radius: 8px;
-      white-space: nowrap;
-      font-size: 14px;
-    }
-
-    nav button.active,
-    nav button:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 25px 20px 60px;
-    }
-
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    .page-title {
-      margin-bottom: 20px;
-    }
-
-    .page-title h2 {
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .page-title p {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    /* =========================
-       CARDS
-    ========================= */
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-    }
-
-    .stat-card {
-      min-height: 125px;
-    }
-
-    .stat-icon {
-      font-size: 23px;
-      margin-bottom: 15px;
-    }
-
-    .stat-number {
-      font-size: 27px;
-      font-weight: bold;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    /* =========================
-       DASHBOARD
-    ========================= */
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .next-class {
-      border-left: 4px solid var(--primary);
-    }
-
-    .next-class .day {
-      color: var(--primary);
-      font-weight: bold;
-      font-size: 13px;
-    }
-
-    .next-class h3 {
-      margin: 10px 0 5px;
-      font-size: 20px;
-    }
-
-    .next-class p {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .zoom-card {
-      background: linear-gradient(135deg, #312e81, #4338ca);
-      border: none;
-    }
-
-    .zoom-card p {
-      color: #dbeafe;
-      margin: 8px 0 17px;
-      font-size: 14px;
-    }
-
-    .btn {
-      border: none;
-      background: var(--primary);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-    .btn:hover {
-      background: var(--primary-dark);
-    }
-
-    .btn-success {
-      background: var(--success);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-    }
-
-    .btn-secondary {
-      background: var(--border);
-    }
-
-    .btn-block {
-      width: 100%;
-    }
-
-    /* =========================
-       TASK
-    ========================= */
-
-    .task-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .task-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 16px;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-
-    .task-check {
-      width: 22px;
-      height: 22px;
-      margin-top: 2px;
-      accent-color: var(--success);
-      flex-shrink: 0;
-    }
-
-    .task-content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .task-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .task-title {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .task-course {
-      color: var(--primary);
-      font-size: 12px;
-      margin-top: 5px;
-    }
-
-    .task-description {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 9px 0;
-      line-height: 1.5;
-    }
-
-    .deadline {
-      font-size: 12px;
-      color: var(--warning);
-    }
-
-    .deadline.overdue {
-      color: var(--danger);
-    }
-
-    .deadline.done {
-      color: var(--success);
-    }
-
-    .task-link {
-      margin-top: 10px;
-      display: inline-block;
-      color: #a5b4fc;
-      font-size: 13px;
-    }
-
-    .task-card.completed {
-      opacity: 0.55;
-    }
-
-    .task-card.completed .task-title {
-      text-decoration: line-through;
-    }
-
-    .task-filter {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    .task-filter select {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    /* =========================
-       SCHEDULE
-    ========================= */
-
-    .schedule-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .schedule-card {
-      display: grid;
-      grid-template-columns: 100px 1fr auto;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .schedule-day {
-      text-align: center;
-    }
-
-    .schedule-day strong {
-      display: block;
-      font-size: 15px;
-    }
-
-    .schedule-day small {
-      color: var(--muted);
-    }
-
-    .schedule-course h3 {
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-
-    .schedule-course p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .schedule-time {
-      background: var(--card2);
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    /* =========================
-       MATERIAL
-    ========================= */
-
-    .material-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .material-card h3 {
-      margin-bottom: 7px;
-    }
-
-    .material-course {
-      color: var(--primary);
-      font-size: 12px;
-    }
-
-    .material-info {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 10px 0;
-    }
-
-    /* =========================
-       MODAL
-    ========================= */
-
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 5000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 22px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .close {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 11px;
-      border-radius: 8px;
-      outline: none;
-    }
-
-    .form-group textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--primary);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 18px;
-    }
-
-    /* =========================
-       EMPTY / ERROR
-    ========================= */
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 35px 15px;
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px dashed var(--border);
-    }
-
-    .error-box {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid var(--danger);
-      color: #fecaca;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-
-    /* =========================
-       TOAST
-    ========================= */
-
-    #toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      padding: 13px 17px;
-      border-radius: 10px;
-      display: none;
-      z-index: 9999;
-      max-width: 320px;
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 850px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .material-list {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .header-inner {
-        padding: 12px 15px;
-      }
-
-      nav {
-        padding: 0 15px 12px;
-      }
-
-      main {
-        padding: 20px 15px 50px;
-      }
-
-      .brand h1 {
-        font-size: 16px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      .stat-card {
-        padding: 14px;
-        min-height: 105px;
-      }
-
-      .stat-number {
-        font-size: 23px;
-      }
-
-      .schedule-card {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      .schedule-day {
-        text-align: left;
-      }
-
-      .schedule-time {
-        display: inline-block;
-        width: fit-content;
-      }
-
-      .task-header {
-        flex-direction: column;
-      }
-
-      .page-title h2 {
-        font-size: 22px;
-      }
-    }
-  </style>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Manajemen Kuliah</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+header {
+  padding: 20px;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+header h1 {
+  margin: 0 0 5px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+nav button {
+  background: #1f2937;
+  color: white;
+  border: 1px solid #374151;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+nav button.active {
+  background: #2563eb;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 15px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.stat {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.muted {
+  color: #9ca3af;
+}
+
+button,
+a.btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 13px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-success {
+  background: #16a34a;
+  color: white;
+}
+
+.btn-warning {
+  background: #d97706;
+  color: white;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 12px;
+  border-radius: 7px;
+  border: 1px solid #4b5563;
+  background: #1f2937;
+  color: white;
+}
+
+label {
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+.status-done {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.status-todo {
+  color: #f87171;
+  font-weight: bold;
+}
+
+.absen-card {
+  border-left: 5px solid #ef4444;
+}
+
+.task-card.done {
+  border-left: 5px solid #22c55e;
+}
+
+.task-card.todo {
+  border-left: 5px solid #ef4444;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 550px;
+  background: #111827;
+  padding: 20px;
+  border-radius: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close {
+  float: right;
+  background: #374151;
+  color: white;
+}
+
+.small {
+  font-size: 13px;
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <!-- =========================
-       LOADING
-  ========================== -->
+<header>
 
-  <div id="loading">
-    <div class="loading-box">
-      <div class="spinner"></div>
-      <div>Memuat data kuliah...</div>
-    </div>
+  <h1 id="appName">
+    Manajemen Kuliah
+  </h1>
+
+  <div class="muted" id="userInfo">
+    Belum login
   </div>
 
-  <!-- =========================
-       HEADER
-  ========================== -->
+</header>
 
-  <header>
 
-<div class="header-inner">
-
-  <div class="brand">
-    <div class="brand-icon">🎓</div>
-
-    <div>
-      <h1 id="appName">Manajemen Kuliah</h1>
-      <p id="className">Memuat...</p>
-    </div>
-  </div>
-
-  <button class="admin-btn" onclick="openAdmin()">
-    ⚙️ Admin
-  </button>
-
-</div>
+<div class="container">
 
 <nav>
 
-  <button class="active" onclick="showSection('dashboard', this)">
+  <button onclick="showTab('dashboard')">
     🏠 Dashboard
   </button>
 
-  <button onclick="showSection('jadwal', this)">
+  <button onclick="showTab('jadwal')">
     📅 Jadwal
   </button>
 
-  <button onclick="showSection('tugas', this)">
+  <button onclick="showTab('tugas')">
     📝 Tugas
   </button>
 
-  <button onclick="showSection('materi', this)">
+  <button onclick="showTab('absen')">
+    📌 Absen
+  </button>
+
+  <button onclick="showTab('materi')">
     📚 Materi
+  </button>
+
+  <button
+    id="btnKelola"
+    class="hidden"
+    onclick="showTab('kelola')">
+
+    ⚙️ Kelola
+
   </button>
 
 </nav>
 
-  </header>
 
-  <!-- =========================
-       MAIN
-  ========================== -->
+<!-- =================================================
+     DASHBOARD
+     ================================================= -->
 
-  <main>
-
-<!-- DASHBOARD -->
-
-<section id="dashboard" class="section active">
-
-  <div class="page-title">
-    <h2>Dashboard</h2>
-    <p id="welcomeText">Selamat datang.</p>
-  </div>
-
+<section id="dashboard">
 
   <div class="grid">
 
-    <div class="card stat-card">
-      <div class="stat-icon">📚</div>
-      <div class="stat-number" id="statCourse">0</div>
-      <div class="stat-label">Mata Kuliah</div>
+    <div class="card">
+      <div class="muted">
+        Mata Kuliah
+      </div>
+      <div class="stat"
+           id="jumlahMK">
+        0
+      </div>
     </div>
 
-    <div class="card stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-number" id="statSchedule">0</div>
-      <div class="stat-label">Jadwal</div>
+    <div class="card">
+      <div class="muted">
+        Total Tugas
+      </div>
+      <div class="stat"
+           id="jumlahTugas">
+        0
+      </div>
     </div>
 
-    <div class="card stat-card">
-      <div class="stat-icon">📝</div>
-      <div class="stat-number" id="statTask">0</div>
-      <div class="stat-label">Tugas Aktif</div>
+    <div class="card">
+      <div class="muted">
+        Tugas Selesai
+      </div>
+      <div class="stat"
+           id="jumlahSelesai">
+        0
+      </div>
     </div>
 
-    <div class="card stat-card">
-      <div class="stat-icon">⏳</div>
-      <div class="stat-number" id="statUnfinished">0</div>
-      <div class="stat-label">Belum Selesai</div>
+    <div class="card">
+      <div class="muted">
+        Tugas Belum
+      </div>
+      <div class="stat"
+           id="jumlahBelum">
+        0
+      </div>
     </div>
 
   </div>
 
 
-  <div class="dashboard-grid">
+  <div class="card">
 
-    <div class="card next-class">
+    <h2>🔴 Absen Terbaru</h2>
 
-      <div class="day">KULIAH TERDEKAT</div>
-
-      <h3 id="nextClassName">
-        Belum ada jadwal
-      </h3>
-
-      <p id="nextClassInfo">
-        -
-      </p>
-
+    <div id="dashboardAbsen">
+      Memuat...
     </div>
 
+  </div>
 
-    <div class="card zoom-card">
 
-      <h3>🎥 Kuliah Online</h3>
+  <div class="card">
 
-      <p>
-        Gunakan satu link Zoom untuk mengikuti perkuliahan.
-      </p>
+    <h2>⏰ Tugas Terdekat</h2>
 
-      <button class="btn btn-block"
-              onclick="openZoom()">
-        JOIN ZOOM
+    <div id="dashboardTugas">
+      Memuat...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =================================================
+     JADWAL
+     ================================================= -->
+
+<section id="jadwal"
+         class="hidden">
+
+  <div class="card">
+
+    <h2>📅 Jadwal Kuliah</h2>
+
+    <div id="jadwalList">
+      Memuat...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =================================================
+     TUGAS
+     ================================================= -->
+
+<section id="tugas"
+         class="hidden">
+
+  <div class="card">
+
+    <h2>📝 Tugas Kuliah</h2>
+
+    <p class="muted">
+      Checklist ini adalah status tugas pribadi Anda.
+    </p>
+
+    <div id="tugasList">
+      Memuat...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =================================================
+     ABSEN
+     ================================================= -->
+
+<section id="absen"
+         class="hidden">
+
+  <div class="card">
+
+    <h2>📌 Link Absen</h2>
+
+    <p class="muted">
+      Link absen yang dikirim di WhatsApp
+      disimpan di sini agar tidak tenggelam.
+    </p>
+
+    <div id="absenList">
+      Memuat...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =================================================
+     MATERI
+     ================================================= -->
+
+<section id="materi"
+         class="hidden">
+
+  <div class="card">
+
+    <h2>📚 Materi Kuliah</h2>
+
+    <div id="materiList">
+      Memuat...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =================================================
+     KELOLA
+     ================================================= -->
+
+<section id="kelola"
+         class="hidden">
+
+  <div class="card">
+
+    <h2>⚙️ Kelola Kuliah</h2>
+
+    <p class="muted">
+      Fitur ini hanya tersedia untuk ADMIN dan KETUA.
+    </p>
+
+
+    <div class="grid">
+
+      <button
+        class="btn-primary"
+        onclick="openModal('taskModal')">
+
+        ➕ Tambah Tugas
+
+      </button>
+
+
+      <button
+        class="btn-primary"
+        onclick="openModal('absenModal')">
+
+        📌 Tambah Link Absen
+
+      </button>
+
+
+      <button
+        class="btn-primary"
+        onclick="openModal('materiModal')">
+
+        📚 Tambah Materi
+
       </button>
 
     </div>
 
   </div>
 
-
-  <div style="margin-top:15px">
-
-    <div class="card">
-
-      <h3 style="margin-bottom:15px">
-        ⏰ Tugas Terdekat
-      </h3>
-
-      <div id="dashboardTasks">
-        Memuat...
-      </div>
-
-    </div>
-
-  </div>
-
 </section>
 
 
-<!-- JADWAL -->
+<!-- =================================================
+     LOGIN MODAL
+     ================================================= -->
 
-<section id="jadwal" class="section">
+<div class="modal"
+     id="loginModal">
 
-  <div class="page-title">
+  <div class="modal-box">
 
-    <h2>📅 Jadwal Kuliah</h2>
+    <h2>Login</h2>
 
-    <p>
-      Jadwal perkuliahan Anda.
-    </p>
+    <label>ID Pengguna</label>
 
-  </div>
-
-  <div id="scheduleList"
-       class="schedule-list">
-  </div>
-
-</section>
+    <input
+      id="loginUser"
+      placeholder="Contoh U001">
 
 
-<!-- TUGAS -->
+    <label>PIN</label>
 
-<section id="tugas" class="section">
-
-  <div class="page-title">
-
-    <h2>📝 Tugas Kuliah</h2>
-
-    <p>
-      Checklist tugas ini hanya tersimpan di browser Anda.
-    </p>
-
-  </div>
+    <input
+      id="loginPin"
+      type="password"
+      placeholder="PIN">
 
 
-  <div class="task-filter">
+    <button
+      class="btn-primary"
+      onclick="login()">
 
-    <select id="taskCourseFilter"
-            onchange="renderTasks()">
+      Login
 
-      <option value="ALL">
-        Semua Mata Kuliah
-      </option>
-
-    </select>
-
-
-    <select id="taskStatusFilter"
-            onchange="renderTasks()">
-
-      <option value="ALL">
-        Semua Status
-      </option>
-
-      <option value="TODO">
-        Belum selesai
-      </option>
-
-      <option value="DONE">
-        Sudah selesai
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div id="taskList"
-       class="task-list">
-  </div>
-
-</section>
-
-
-<!-- MATERI -->
-
-<section id="materi" class="section">
-
-  <div class="page-title">
-
-    <h2>📚 Materi Kuliah</h2>
-
-    <p>
-      Kumpulan materi dan dokumen perkuliahan.
-    </p>
-
-  </div>
-
-  <div id="materialList"
-       class="material-list">
-  </div>
-
-</section>
-
-  </main>
-
-  <!-- =========================
-       ADMIN LOGIN MODAL
-  ========================== -->
-
-  <div id="adminModal" class="modal">
-
-<div class="modal-box">
-
-  <div class="modal-header">
-
-    <h3>🔐 Admin</h3>
-
-    <button class="close"
-            onclick="closeModal('adminModal')">
-      ×
-    </button>
-
-  </div>
-
-  <p style="color:var(--muted);font-size:13px;margin-bottom:15px">
-    Masukkan PIN admin untuk mengelola tugas.
-  </p>
-
-  <div class="form-group">
-
-    <label>PIN Admin</label>
-
-    <input type="password"
-           id="adminPin"
-           placeholder="Masukkan PIN">
-
-  </div>
-
-  <div class="modal-actions">
-
-    <button class="btn btn-secondary"
-            onclick="closeModal('adminModal')">
-      Batal
-    </button>
-
-    <button class="btn"
-            onclick="loginAdmin()">
-      Masuk
     </button>
 
   </div>
 
 </div>
 
-  </div>
 
-  <!-- =========================
-       ADD TASK MODAL
-  ========================== -->
+<!-- =================================================
+     TASK MODAL
+     ================================================= -->
 
-  <div id="taskModal" class="modal">
+<div class="modal hidden"
+     id="taskModal">
 
-<div class="modal-box">
+  <div class="modal-box">
 
-  <div class="modal-header">
+    <button
+      class="close"
+      onclick="closeModal('taskModal')">
 
-    <h3>➕ Tambah Tugas</h3>
+      X
 
-    <button class="close"
-            onclick="closeModal('taskModal')">
-      ×
     </button>
 
-  </div>
+    <h2>Tambah Tugas</h2>
 
-
-  <div class="form-group">
 
     <label>Mata Kuliah</label>
 
-    <select id="newTaskCourse">
-    </select>
+    <select id="taskMK"></select>
 
-  </div>
-
-
-  <div class="form-group">
 
     <label>Nama Tugas</label>
 
-    <input type="text"
-           id="newTaskName"
-           placeholder="Contoh: Resume Bab 2">
+    <input id="taskNama">
 
-  </div>
-
-
-  <div class="form-group">
 
     <label>Deskripsi</label>
 
-    <textarea id="newTaskDescription"
-              placeholder="Deskripsi tugas"></textarea>
+    <textarea id="taskDeskripsi"></textarea>
 
-  </div>
-
-
-  <div class="form-group">
 
     <label>Deadline</label>
 
-    <input type="datetime-local"
-           id="newTaskDeadline">
+    <input
+      id="taskDeadline"
+      type="datetime-local">
 
-  </div>
-
-
-  <div class="form-group">
 
     <label>Link Tugas</label>
 
-    <input type="url"
-           id="newTaskLink"
-           placeholder="https://...">
+    <input id="taskLink">
 
-  </div>
-
-
-  <div class="form-group">
 
     <label>Sumber</label>
 
-    <select id="newTaskSource">
-
-      <option value="Classroom">
-        Google Classroom
-      </option>
-
-      <option value="WhatsApp">
-        WhatsApp
-      </option>
-
-      <option value="Zoom">
-        Zoom
-      </option>
-
-      <option value="Lainnya">
-        Lainnya
-      </option>
-
-    </select>
-
-  </div>
+    <input
+      id="taskSumber"
+      value="Google Classroom">
 
 
-  <div class="modal-actions">
+    <button
+      class="btn-success"
+      onclick="saveTask()">
 
-    <button class="btn btn-secondary"
-            onclick="closeModal('taskModal')">
-      Batal
-    </button>
-
-    <button class="btn btn-success"
-            onclick="submitTask()">
       Simpan Tugas
+
     </button>
 
   </div>
 
 </div>
 
+
+<!-- =================================================
+     ABSEN MODAL
+     ================================================= -->
+
+<div class="modal hidden"
+     id="absenModal">
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      onclick="closeModal('absenModal')">
+
+      X
+
+    </button>
+
+    <h2>Tambah Link Absen</h2>
+
+
+    <label>Mata Kuliah</label>
+
+    <select id="absenMK"></select>
+
+
+    <label>Tanggal</label>
+
+    <input
+      id="absenTanggal"
+      type="date">
+
+
+    <label>Pertemuan</label>
+
+    <input
+      id="absenPertemuan"
+      type="number">
+
+
+    <label>Judul Absen</label>
+
+    <input
+      id="absenJudul"
+      placeholder="Absensi Pertemuan 2">
+
+
+    <label>Link Absen</label>
+
+    <input
+      id="absenLink"
+      placeholder="https://...">
+
+
+    <label>Deadline Absen</label>
+
+    <input
+      id="absenDeadline"
+      type="datetime-local">
+
+
+    <label>Sumber</label>
+
+    <input
+      id="absenSumber"
+      value="WhatsApp">
+
+
+    <button
+      class="btn-success"
+      onclick="saveAbsen()">
+
+      Simpan Absen
+
+    </button>
+
   </div>
 
-  <div id="toast"></div>
-
-  <!-- =========================
-       JAVASCRIPT
-  ========================== -->
-
-  <script>
-
-    /* ==========================================
-       1. KONFIGURASI API
-    ========================================== */
-
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbzKlqxTdq_Ymbyf-7paKOlIe_FljdoW0QeW8OqmQN4qotCqSrQMw-HinuUhevWKMRlS/exec";
+</div>
 
 
-    /* ==========================================
-       2. DATA GLOBAL
-    ========================================== */
+<!-- =================================================
+     MATERI MODAL
+     ================================================= -->
 
-    let DATA = {
+<div class="modal hidden"
+     id="materiModal">
 
-      mataKuliah: [],
-      jadwal: [],
-      tugas: [],
-      materi: [],
-      pengaturan: {}
+  <div class="modal-box">
 
-    };
+    <button
+      class="close"
+      onclick="closeModal('materiModal')">
+
+      X
+
+    </button>
+
+    <h2>Tambah Materi</h2>
 
 
-    let adminLoggedIn = false;
+    <label>Mata Kuliah</label>
+
+    <select id="materiMK"></select>
 
 
-    /* ==========================================
-       3. INIT
-    ========================================== */
+    <label>Pertemuan</label>
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      loadData
+    <input
+      id="materiPertemuan"
+      type="number">
+
+
+    <label>Judul Materi</label>
+
+    <input id="materiJudul">
+
+
+    <label>Jenis</label>
+
+    <select id="materiJenis">
+
+      <option>PDF</option>
+      <option>PPT</option>
+      <option>DOC</option>
+      <option>Video</option>
+      <option>Link</option>
+
+    </select>
+
+
+    <label>Link</label>
+
+    <input id="materiLink">
+
+
+    <label>Keterangan</label>
+
+    <textarea id="materiKeterangan"></textarea>
+
+
+    <button
+      class="btn-success"
+      onclick="saveMateri()">
+
+      Simpan Materi
+
+    </button>
+
+  </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =================================================
+   KONFIGURASI
+   ================================================= */
+
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxKG4COO5k_2DDjLf4beOyClYwgp7O926aBF4tYbtoxyd4hXtadLRi0Yeihisz-o0W_ig/exec";
+
+
+let data = {
+
+  mataKuliah: [],
+  jadwal: [],
+  tugas: [],
+  materi: [],
+  absensi: []
+
+};
+
+
+let statusTugas = [];
+
+let currentUser = null;
+
+
+/* =================================================
+   START
+   ================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  start
+);
+
+
+async function start() {
+
+  loadSession();
+
+  await loadData();
+
+  if (!currentUser) {
+
+    document
+      .getElementById("loginModal")
+      .classList.remove("hidden");
+
+  }
+
+}
+
+
+/* =================================================
+   LOAD DATA
+   ================================================= */
+
+async function loadData() {
+
+  try {
+
+    const response =
+      await fetch(
+        API_URL + "?action=all"
+      );
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      alert(result.message);
+
+      return;
+
+    }
+
+
+    data =
+      result;
+
+
+    renderAll();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Gagal mengambil data dari server."
+    );
+
+  }
+
+}
+
+
+/* =================================================
+   SESSION
+   ================================================= */
+
+function loadSession() {
+
+  const saved =
+    localStorage.getItem(
+      "kuliah_user"
+    );
+
+  if (saved) {
+
+    currentUser =
+      JSON.parse(saved);
+
+    updateUserUI();
+
+    loadStatusTugas();
+
+  }
+
+}
+
+
+function saveSession() {
+
+  localStorage.setItem(
+    "kuliah_user",
+    JSON.stringify(currentUser)
+  );
+
+}
+
+
+function updateUserUI() {
+
+  if (!currentUser) return;
+
+
+  document.getElementById(
+    "userInfo"
+  ).textContent =
+    currentUser.Nama +
+    " • " +
+    currentUser.Role;
+
+
+  if (
+    currentUser.Role === "ADMIN" ||
+    currentUser.Role === "KETUA"
+  ) {
+
+    document
+      .getElementById("btnKelola")
+      .classList.remove("hidden");
+
+  }
+
+}
+
+
+/* =================================================
+   LOGIN
+   ================================================= */
+
+async function login() {
+
+  const userId =
+    document.getElementById(
+      "loginUser"
+    ).value.trim();
+
+
+  const pin =
+    document.getElementById(
+      "loginPin"
+    ).value.trim();
+
+
+  if (!userId || !pin) {
+
+    alert(
+      "ID dan PIN wajib diisi."
+    );
+
+    return;
+
+  }
+
+
+  const response =
+    await fetch(
+      API_URL +
+      "?action=login" +
+      "&user_id=" +
+      encodeURIComponent(userId) +
+      "&pin=" +
+      encodeURIComponent(pin)
     );
 
 
-    async function loadData() {
+  const result =
+    await response.json();
 
-      try {
 
-        const response =
-          await fetch(API_URL + "?action=all");
+  if (!result.success) {
 
-        if (!response.ok) {
-          throw new Error(
-            "Gagal menghubungi server."
-          );
+    alert(result.message);
+
+    return;
+
+  }
+
+
+  currentUser = {
+
+    ...result.user,
+
+    PIN: pin
+
+  };
+
+
+  saveSession();
+
+  updateUserUI();
+
+  document
+    .getElementById("loginModal")
+    .classList.add("hidden");
+
+
+  await loadStatusTugas();
+
+  renderAll();
+
+}
+
+
+/* =================================================
+   STATUS TUGAS
+   ================================================= */
+
+async function loadStatusTugas() {
+
+  if (!currentUser) return;
+
+
+  const url =
+    API_URL +
+    "?action=statusTugas" +
+    "&user_id=" +
+    encodeURIComponent(
+      currentUser.ID
+    ) +
+    "&pin=" +
+    encodeURIComponent(
+      currentUser.PIN
+    );
+
+
+  const response =
+    await fetch(url);
+
+
+  const result =
+    await response.json();
+
+
+  if (result.success) {
+
+    statusTugas =
+      result.data || [];
+
+  }
+
+}
+
+
+function getTaskStatus(taskId) {
+
+  const item =
+    statusTugas.find(
+      x =>
+        String(x.ID_TUGAS) ===
+        String(taskId)
+    );
+
+
+  return item
+    ? item.Status
+    : "BELUM";
+
+}
+
+
+async function toggleTask(taskId) {
+
+  if (!currentUser) {
+
+    alert(
+      "Silakan login terlebih dahulu."
+    );
+
+    return;
+
+  }
+
+
+  const current =
+    getTaskStatus(taskId);
+
+
+  const newStatus =
+    current === "SELESAI"
+      ? "BELUM"
+      : "SELESAI";
+
+
+  const body =
+    new URLSearchParams({
+
+      action:
+        "updateStatusTugas",
+
+      user_id:
+        currentUser.ID,
+
+      pin:
+        currentUser.PIN,
+
+      id_tugas:
+        taskId,
+
+      status:
+        newStatus
+
+    });
+
+
+  const response =
+    await fetch(
+      API_URL,
+      {
+        method: "POST",
+        body: body
+      }
+    );
+
+
+  const result =
+    await response.json();
+
+
+  if (!result.success) {
+
+    alert(result.message);
+
+    return;
+
+  }
+
+
+  await loadStatusTugas();
+
+  renderTugas();
+
+  renderDashboard();
+
+}
+
+
+/* =================================================
+   RENDER
+   ================================================= */
+
+function renderAll() {
+
+  renderDashboard();
+
+  renderJadwal();
+
+  renderTugas();
+
+  renderAbsen();
+
+  renderMateri();
+
+  fillMKSelects();
+
+}
+
+
+/* =================================================
+   DASHBOARD
+   ================================================= */
+
+function renderDashboard() {
+
+  document.getElementById(
+    "jumlahMK"
+  ).textContent =
+    data.mataKuliah.length;
+
+
+  document.getElementById(
+    "jumlahTugas"
+  ).textContent =
+    data.tugas.length;
+
+
+  const selesai =
+    data.tugas.filter(
+      t =>
+        getTaskStatus(t.ID) ===
+        "SELESAI"
+    ).length;
+
+
+  document.getElementById(
+    "jumlahSelesai"
+  ).textContent =
+    selesai;
+
+
+  document.getElementById(
+    "jumlahBelum"
+  ).textContent =
+    data.tugas.length - selesai;
+
+
+  renderDashboardAbsen();
+
+  renderDashboardTugas();
+
+}
+
+
+/* =================================================
+   DASHBOARD ABSEN
+   ================================================= */
+
+function renderDashboardAbsen() {
+
+  const box =
+    document.getElementById(
+      "dashboardAbsen"
+    );
+
+
+  if (!data.absensi.length) {
+
+    box.innerHTML =
+      "<p class='muted'>Belum ada link absen.</p>";
+
+    return;
+
+  }
+
+
+  const item =
+    data.absensi
+      .filter(x => x.Aktif === true)
+      .slice(-1)[0];
+
+
+  box.innerHTML =
+    absenCard(item);
+
+}
+
+
+/* =================================================
+   DASHBOARD TUGAS
+   ================================================= */
+
+function renderDashboardTugas() {
+
+  const box =
+    document.getElementById(
+      "dashboardTugas"
+    );
+
+
+  const tasks =
+    data.tugas.slice(0, 5);
+
+
+  if (!tasks.length) {
+
+    box.innerHTML =
+      "<p class='muted'>Belum ada tugas.</p>";
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    tasks
+      .map(taskCard)
+      .join("");
+
+}
+
+
+/* =================================================
+   JADWAL
+   ================================================= */
+
+function renderJadwal() {
+
+  const box =
+    document.getElementById(
+      "jadwalList"
+    );
+
+
+  const days = [
+    "Jumat",
+    "Sabtu",
+    "Minggu"
+  ];
+
+
+  let html = "";
+
+
+  days.forEach(day => {
+
+    const list =
+      data.jadwal
+        .filter(x =>
+          x.Hari === day
+        );
+
+
+    if (!list.length) return;
+
+
+    html +=
+      `<h3>${day}</h3>`;
+
+
+    list.forEach(j => {
+
+      const mk =
+        findMK(j.ID_MK);
+
+
+      html += `
+        <div class="card">
+
+          <strong>
+            ${j.Jam_Mulai}
+            –
+            ${j.Jam_Selesai}
+          </strong>
+
+          <br>
+
+          ${mk
+            ? mk.Mata_Kuliah
+            : j.ID_MK}
+
+          <br>
+
+          <span class="muted">
+            ${mk ? mk.Dosen : ""}
+          </span>
+
+        </div>
+      `;
+
+    });
+
+  });
+
+
+  box.innerHTML = html;
+
+}
+
+
+/* =================================================
+   TUGAS
+   ================================================= */
+
+function renderTugas() {
+
+  const box =
+    document.getElementById(
+      "tugasList"
+    );
+
+
+  if (!data.tugas.length) {
+
+    box.innerHTML =
+      "<p class='muted'>Belum ada tugas.</p>";
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    data.tugas
+      .map(taskCard)
+      .join("");
+
+}
+
+
+function taskCard(task) {
+
+  const status =
+    getTaskStatus(task.ID);
+
+
+  const done =
+    status === "SELESAI";
+
+
+  const mk =
+    findMK(task.ID_MK);
+
+
+  return `
+    <div class="card task-card
+      ${done ? "done" : "todo"}">
+
+      <h3>
+        ${task.Nama_Tugas}
+      </h3>
+
+      <div class="muted">
+        ${mk ? mk.Mata_Kuliah : task.ID_MK}
+      </div>
+
+      <p>
+        ${task.Deskripsi || ""}
+      </p>
+
+      <p>
+        ⏰ Deadline:
+        <strong>
+          ${task.Deadline}
+        </strong>
+      </p>
+
+      <p class="${
+        done
+          ? "status-done"
+          : "status-todo"
+      }">
+
+        ${
+          done
+            ? "🟢 Sudah dikerjakan"
+            : "🔴 Belum dikerjakan"
         }
 
-        const result =
-          await response.json();
+      </p>
 
-        if (!result.success) {
-          throw new Error(
-            result.message || "API gagal."
-          );
+      <button
+        class="${
+          done
+            ? "btn-warning"
+            : "btn-success"
+        }"
+        onclick="toggleTask('${task.ID}')">
+
+        ${
+          done
+            ? "Tandai Belum"
+            : "✓ Sudah Dikerjakan"
         }
 
-        DATA = result;
+      </button>
 
-        renderAll();
+      ${
+        task.Link_Tugas
+          ? `
+            <a
+              class="btn btn-primary"
+              target="_blank"
+              href="${task.Link_Tugas}">
 
-        document.getElementById(
-          "loading"
-        ).style.display = "none";
+              Buka Tugas
 
-      } catch (error) {
+            </a>
+          `
+          : ""
+      }
 
-        document.getElementById(
-          "loading"
-        ).innerHTML = `
+    </div>
+  `;
 
-          <div class="loading-box">
+}
 
-            <div style="font-size:40px">
-              ⚠️
-            </div>
 
-            <h3 style="margin:10px 0">
-              Gagal Memuat Data
+/* =================================================
+   ABSEN
+   ================================================= */
+
+function renderAbsen() {
+
+  const box =
+    document.getElementById(
+      "absenList"
+    );
+
+
+  if (!data.absensi.length) {
+
+    box.innerHTML =
+      "<p class='muted'>Belum ada link absen.</p>";
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    data.absensi
+      .filter(x =>
+        x.Aktif === true
+      )
+      .reverse()
+      .map(absenCard)
+      .join("");
+
+}
+
+
+function absenCard(item) {
+
+  const mk =
+    findMK(item.ID_MK);
+
+
+  return `
+    <div class="card absen-card">
+
+      <h3>
+        🔴 ${item.Judul_Absen}
+      </h3>
+
+      <strong>
+        ${mk
+          ? mk.Mata_Kuliah
+          : item.ID_MK}
+      </strong>
+
+      <p class="muted">
+
+        ${item.Tanggal}
+
+        ${
+          item.Pertemuan
+            ? " • Pertemuan " +
+              item.Pertemuan
+            : ""
+        }
+
+      </p>
+
+      ${
+        item.Deadline_Absen
+          ? `
+            <p>
+              ⏰ Deadline:
+              ${item.Deadline_Absen}
+            </p>
+          `
+          : ""
+      }
+
+      <a
+        class="btn btn-primary"
+        href="${item.Link_Absen}"
+        target="_blank">
+
+        🔗 ABSEN SEKARANG
+
+      </a>
+
+      <button
+        class="btn btn-success"
+        onclick="copyLink('${item.Link_Absen}')">
+
+        📋 Salin Link
+
+      </button>
+
+    </div>
+  `;
+
+}
+
+
+/* =================================================
+   MATERI
+   ================================================= */
+
+function renderMateri() {
+
+  const box =
+    document.getElementById(
+      "materiList"
+    );
+
+
+  if (!data.materi.length) {
+
+    box.innerHTML =
+      "<p class='muted'>Belum ada materi.</p>";
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    data.materi
+      .map(m => {
+
+        const mk =
+          findMK(m.ID_MK);
+
+
+        return `
+          <div class="card">
+
+            <h3>
+              ${m.Judul}
             </h3>
 
-            <p style="
-              color:#94a3b8;
-              font-size:13px;
-              max-width:350px;
-            ">
-              ${escapeHTML(error.message)}
+            <div class="muted">
+              ${mk
+                ? mk.Mata_Kuliah
+                : m.ID_MK}
+            </div>
+
+            <p>
+              Pertemuan:
+              ${m.Pertemuan || "-"}
             </p>
 
-            <button
-              class="btn"
-              style="margin-top:15px"
-              onclick="location.reload()">
-              Coba Lagi
-            </button>
+            <a
+              class="btn btn-primary"
+              target="_blank"
+              href="${m.Link}">
+
+              📚 Buka Materi
+
+            </a>
 
           </div>
-
         `;
 
-      }
+      })
+      .join("");
 
-    }
-
-
-    /* ==========================================
-       4. RENDER SEMUA
-    ========================================== */
-
-    function renderAll() {
-
-      renderSettings();
-
-      renderStatistics();
-
-      renderCourseFilters();
-
-      renderSchedule();
-
-      renderTasks();
-
-      renderMaterials();
-
-      renderNextClass();
-
-      renderDashboardTasks();
-
-    }
+}
 
 
-    /* ==========================================
-       5. SETTINGS
-    ========================================== */
+/* =================================================
+   SELECT MATA KULIAH
+   ================================================= */
 
-    function renderSettings() {
+function fillMKSelects() {
 
-      const settings =
-        DATA.pengaturan || {};
-
-      document.getElementById(
-        "appName"
-      ).textContent =
-        settings.Nama_Aplikasi ||
-        "Manajemen Kuliah";
-
-      document.getElementById(
-        "className"
-      ).textContent =
-        settings.Nama_Kelas ||
-        "";
-
-      document.getElementById(
-        "welcomeText"
-      ).textContent =
-        "Selamat datang, " +
-        (settings.Nama_Pengguna || "Mahasiswa") +
-        ".";
-
-    }
+  const selects = [
+    "taskMK",
+    "absenMK",
+    "materiMK"
+  ];
 
 
-    /* ==========================================
-       6. STATISTICS
-    ========================================== */
+  selects.forEach(id => {
 
-    function renderStatistics() {
-
-      const activeCourses =
-        DATA.mataKuliah.filter(
-          x => isActive(x.Aktif)
-        );
-
-      const activeTasks =
-        DATA.tugas.filter(
-          x => isActive(x.Aktif)
-        );
-
-      document.getElementById(
-        "statCourse"
-      ).textContent =
-        activeCourses.length;
-
-      document.getElementById(
-        "statSchedule"
-      ).textContent =
-        DATA.jadwal.length;
-
-      document.getElementById(
-        "statTask"
-      ).textContent =
-        activeTasks.length;
-
-      const unfinished =
-        activeTasks.filter(
-          x => !isTaskCompleted(x.ID)
-        ).length;
-
-      document.getElementById(
-        "statUnfinished"
-      ).textContent =
-        unfinished;
-
-    }
+    const select =
+      document.getElementById(id);
 
 
-    /* ==========================================
-       7. COURSE NAME
-    ========================================== */
-
-    function getCourse(id) {
-
-      return DATA.mataKuliah.find(
-        x => String(x.ID) === String(id)
-      );
-
-    }
+    if (!select) return;
 
 
-    function getCourseName(id) {
+    select.innerHTML =
+      data.mataKuliah
+        .map(m => `
+          <option value="${m.ID}">
+            ${m.Mata_Kuliah}
+          </option>
+        `)
+        .join("");
 
-      const course =
-        getCourse(id);
+  });
 
-      return course
-        ? course.Mata_Kuliah
-        : "Mata Kuliah";
-
-    }
+}
 
 
-    /* ==========================================
-       8. SCHEDULE
-    ========================================== */
+/* =================================================
+   SIMPAN TUGAS
+   ================================================= */
 
-    function renderSchedule() {
+async function saveTask() {
 
-      const container =
+  const body =
+    new URLSearchParams({
+
+      action:
+        "addTask",
+
+      user_id:
+        currentUser.ID,
+
+      pin:
+        currentUser.PIN,
+
+      id_mk:
         document.getElementById(
-          "scheduleList"
-        );
+          "taskMK"
+        ).value,
 
-      let schedules =
-        [...DATA.jadwal];
-
-      schedules.sort(
-        (a, b) =>
-          String(a.Tanggal)
-            .localeCompare(
-              String(b.Tanggal)
-            )
-      );
-
-      if (!schedules.length) {
-
-        container.innerHTML =
-          emptyMessage(
-            "Belum ada jadwal kuliah."
-          );
-
-        return;
-
-      }
-
-
-      container.innerHTML =
-        schedules.map(item => {
-
-          return `
-
-            <div class="card schedule-card">
-
-              <div class="schedule-day">
-
-                <strong>
-                  ${escapeHTML(item.Hari)}
-                </strong>
-
-                <small>
-                  ${formatDateID(item.Tanggal)}
-                </small>
-
-              </div>
-
-
-              <div class="schedule-course">
-
-                <h3>
-                  ${escapeHTML(
-                    getCourseName(item.ID_MK)
-                  )}
-                </h3>
-
-                <p>
-                  Pertemuan ${item.Pertemuan || "-"}
-                  ${item.Keterangan
-                    ? " • " +
-                      escapeHTML(
-                        item.Keterangan
-                      )
-                    : ""}
-                </p>
-
-              </div>
-
-
-              <div class="schedule-time">
-
-                ${escapeHTML(item.Jam_Mulai)}
-                –
-                ${escapeHTML(item.Jam_Selesai)}
-
-              </div>
-
-            </div>
-
-          `;
-
-        }).join("");
-
-    }
-
-
-    /* ==========================================
-       9. NEXT CLASS
-    ========================================== */
-
-    function renderNextClass() {
-
-      const now =
-        new Date();
-
-      const upcoming =
-        DATA.jadwal
-          .map(item => {
-
-            const date =
-              new Date(
-                item.Tanggal +
-                "T" +
-                item.Jam_Mulai +
-                ":00"
-              );
-
-            return {
-              ...item,
-              date
-            };
-
-          })
-          .filter(
-            item =>
-              !isNaN(item.date) &&
-              item.date >= now
-          )
-          .sort(
-            (a, b) =>
-              a.date - b.date
-          );
-
-      const element =
+      nama_tugas:
         document.getElementById(
-          "nextClassName"
-        );
+          "taskNama"
+        ).value,
 
-      const info =
+      deskripsi:
         document.getElementById(
-          "nextClassInfo"
-        );
+          "taskDeskripsi"
+        ).value,
 
-
-      if (!upcoming.length) {
-
-        element.textContent =
-          "Tidak ada jadwal terdekat";
-
-        info.textContent =
-          "Belum ada jadwal berikutnya.";
-
-        return;
-
-      }
-
-
-      const item =
-        upcoming[0];
-
-      element.textContent =
-        getCourseName(item.ID_MK);
-
-      info.innerHTML = `
-
-        📅 ${formatDateID(item.Tanggal)}
-        <br>
-
-        ⏰ ${escapeHTML(item.Jam_Mulai)}
-        –
-        ${escapeHTML(item.Jam_Selesai)}
-
-        <br>
-
-        📖 Pertemuan
-        ${item.Pertemuan || "-"}
-
-      `;
-
-    }
-
-
-    /* ==========================================
-       10. TASK FILTER
-    ========================================== */
-
-    function renderCourseFilters() {
-
-      const filter =
+      deadline:
         document.getElementById(
-          "taskCourseFilter"
-        );
+          "taskDeadline"
+        ).value,
 
-      const addCourse =
+      link_tugas:
         document.getElementById(
-          "newTaskCourse"
-        );
+          "taskLink"
+        ).value,
 
-
-      const courses =
-        DATA.mataKuliah.filter(
-          x => isActive(x.Aktif)
-        );
-
-
-      filter.innerHTML =
-        `<option value="ALL">
-          Semua Mata Kuliah
-        </option>` +
-        courses.map(
-          c => `
-            <option value="${escapeHTML(c.ID)}">
-              ${escapeHTML(c.Mata_Kuliah)}
-            </option>
-          `
-        ).join("");
-
-
-      addCourse.innerHTML =
-        courses.map(
-          c => `
-            <option value="${escapeHTML(c.ID)}">
-              ${escapeHTML(c.Mata_Kuliah)}
-            </option>
-          `
-        ).join("");
-
-    }
-
-
-    /* ==========================================
-       11. TASK
-    ========================================== */
-
-    function renderTasks() {
-
-      const container =
+      sumber:
         document.getElementById(
-          "taskList"
-        );
+          "taskSumber"
+        ).value
 
-      const courseFilter =
-        document.getElementById(
-          "taskCourseFilter"
-        ).value;
+    });
 
-      const statusFilter =
-        document.getElementById(
-          "taskStatusFilter"
-        ).value;
 
-
-      let tasks =
-        DATA.tugas.filter(
-          x => isActive(x.Aktif)
-        );
-
-
-      if (courseFilter !== "ALL") {
-
-        tasks =
-          tasks.filter(
-            x =>
-              String(x.ID_MK) ===
-              String(courseFilter)
-          );
-
-      }
-
-
-      if (statusFilter === "TODO") {
-
-        tasks =
-          tasks.filter(
-            x =>
-              !isTaskCompleted(x.ID)
-          );
-
-      }
-
-
-      if (statusFilter === "DONE") {
-
-        tasks =
-          tasks.filter(
-            x =>
-              isTaskCompleted(x.ID)
-          );
-
-      }
-
-
-      tasks.sort(
-        (a, b) =>
-          parseDeadline(a.Deadline) -
-          parseDeadline(b.Deadline)
-      );
-
-
-      if (!tasks.length) {
-
-        container.innerHTML =
-          emptyMessage(
-            "Tidak ada tugas."
-          );
-
-        return;
-
-      }
-
-
-      container.innerHTML =
-        tasks.map(
-          renderTaskCard
-        ).join("");
-
-    }
-
-
-    function renderTaskCard(task) {
-
-      const completed =
-        isTaskCompleted(task.ID);
-
-      const deadline =
-        parseDeadline(
-          task.Deadline
-        );
-
-      const overdue =
-        !completed &&
-        deadline &&
-        deadline < new Date();
-
-
-      let deadlineClass =
-        completed
-          ? "done"
-          : overdue
-            ? "overdue"
-            : "";
-
-
-      let deadlineText =
-        completed
-          ? "✓ Sudah selesai"
-          : overdue
-            ? "⚠️ Deadline terlewat"
-            : "⏳ " +
-              countdown(
-                deadline
-              );
-
-
-      return `
-
-        <div class="task-card
-          ${completed ? "completed" : ""}">
-
-          <input
-            class="task-check"
-            type="checkbox"
-            ${completed ? "checked" : ""}
-            onchange="
-              toggleTask(
-                '${escapeJS(task.ID)}',
-                this.checked
-              )
-            ">
-
-
-          <div class="task-content">
-
-            <div class="task-header">
-
-              <div>
-
-                <div class="task-title">
-
-                  ${escapeHTML(
-                    task.Nama_Tugas
-                  )}
-
-                </div>
-
-                <div class="task-course">
-
-                  ${escapeHTML(
-                    getCourseName(
-                      task.ID_MK
-                    )
-                  )}
-
-                </div>
-
-              </div>
-
-              <small>
-                ${escapeHTML(
-                  task.Sumber || ""
-                )}
-              </small>
-
-            </div>
-
-
-            <div class="task-description">
-
-              ${escapeHTML(
-                task.Deskripsi || ""
-              )}
-
-            </div>
-
-
-            <div class="deadline ${deadlineClass}">
-
-              ${escapeHTML(
-                task.Deadline || "-"
-              )}
-
-              <br>
-
-              ${deadlineText}
-
-            </div>
-
-
-            ${
-              task.Link_Tugas
-              ? `
-                <a
-                  class="task-link"
-                  href="${safeURL(
-                    task.Link_Tugas
-                  )}"
-                  target="_blank"
-                  rel="noopener">
-                  🔗 Buka Tugas
-                </a>
-              `
-              : ""
-            }
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-
-
-    /* ==========================================
-       12. DASHBOARD TASKS
-    ========================================== */
-
-    function renderDashboardTasks() {
-
-      const container =
-        document.getElementById(
-          "dashboardTasks"
-        );
-
-
-      const tasks =
-        DATA.tugas
-          .filter(
-            x =>
-              isActive(x.Aktif) &&
-              !isTaskCompleted(x.ID)
-          )
-          .sort(
-            (a, b) =>
-              parseDeadline(a.Deadline) -
-              parseDeadline(b.Deadline)
-          )
-          .slice(0, 5);
-
-
-      if (!tasks.length) {
-
-        container.innerHTML =
-          emptyMessage(
-            "🎉 Semua tugas sudah selesai."
-          );
-
-        return;
-
-      }
-
-
-      container.innerHTML =
-        tasks.map(task => `
-
-          <div style="
-            padding:12px 0;
-            border-bottom:1px solid var(--border);
-          ">
-
-            <strong>
-              ${escapeHTML(
-                task.Nama_Tugas
-              )}
-            </strong>
-
-            <div style="
-              color:var(--muted);
-              font-size:12px;
-              margin-top:4px;
-            ">
-
-              ${escapeHTML(
-                getCourseName(
-                  task.ID_MK
-                )
-              )}
-
-              •
-
-              ${escapeHTML(
-                task.Deadline
-              )}
-
-            </div>
-
-          </div>
-
-        `).join("");
-
-    }
-
-
-    /* ==========================================
-       13. MATERIAL
-    ========================================== */
-
-    function renderMaterials() {
-
-      const container =
-        document.getElementById(
-          "materialList"
-        );
-
-
-      if (!DATA.materi.length) {
-
-        container.innerHTML =
-          emptyMessage(
-            "Belum ada materi."
-          );
-
-        return;
-
-      }
-
-
-      container.innerHTML =
-        DATA.materi.map(
-          item => `
-
-            <div class="card material-card">
-
-              <div class="material-course">
-
-                ${escapeHTML(
-                  getCourseName(
-                    item.ID_MK
-                  )
-                )}
-
-              </div>
-
-              <h3 style="margin-top:8px">
-
-                ${escapeHTML(
-                  item.Judul
-                )}
-
-              </h3>
-
-              <div class="material-info">
-
-                Pertemuan
-                ${item.Pertemuan || "-"}
-
-                •
-                ${escapeHTML(
-                  item.Jenis || "Materi"
-                )}
-
-                ${
-                  item.Keterangan
-                  ? "<br>" +
-                    escapeHTML(
-                      item.Keterangan
-                    )
-                  : ""
-                }
-
-              </div>
-
-
-              ${
-                item.Link
-                ? `
-                  <a
-                    class="btn"
-                    style="
-                      display:inline-block;
-                      text-decoration:none;
-                    "
-                    href="${safeURL(item.Link)}"
-                    target="_blank"
-                    rel="noopener">
-                    📖 Buka Materi
-                  </a>
-                `
-                : ""
-              }
-
-            </div>
-
-          `
-        ).join("");
-
-    }
-
-
-    /* ==========================================
-       14. PRIVATE CHECKLIST
-    ========================================== */
-
-    function getChecklist() {
-
-      try {
-
-        return JSON.parse(
-          localStorage.getItem(
-            "manajemen_kuliah_checklist"
-          ) || "{}"
-        );
-
-      } catch {
-
-        return {};
-
-      }
-
-    }
-
-
-    function isTaskCompleted(id) {
-
-      const checklist =
-        getChecklist();
-
-      return checklist[id] === true;
-
-    }
-
-
-    function toggleTask(id, checked) {
-
-      const checklist =
-        getChecklist();
-
-      checklist[id] =
-        checked;
-
-      localStorage.setItem(
-        "manajemen_kuliah_checklist",
-        JSON.stringify(checklist)
-      );
-
-
-      renderTasks();
-
-      renderDashboardTasks();
-
-      renderStatistics();
-
-      showToast(
-        checked
-          ? "✓ Tugas ditandai selesai."
-          : "Tugas dikembalikan ke belum selesai."
-      );
-
-    }
-
-
-    /* ==========================================
-       15. ADMIN
-    ========================================== */
-
-    function openAdmin() {
-
-      if (adminLoggedIn) {
-
-        openModal(
-          "taskModal"
-        );
-
-        return;
-
-      }
-
-
-      document.getElementById(
-        "adminPin"
-      ).value = "";
-
-      openModal(
-        "adminModal"
-      );
-
-    }
-
-
-    async function loginAdmin() {
-
-      const pin =
-        document.getElementById(
-          "adminPin"
-        ).value.trim();
-
-
-      if (!pin) {
-
-        showToast(
-          "Masukkan PIN admin."
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * PIN diverifikasi oleh Apps Script.
-       * PIN tidak disimpan di frontend.
-       */
-
-      try {
-
-        const url =
-          API_URL +
-          "?action=addTask" +
-          "&pin=" +
-          encodeURIComponent(pin) +
-          "&id_mk=TEST" +
-          "&nama_tugas=";
-
-        const response =
-          await fetch(url);
-
-        const result =
-          await response.json();
-
-
-        /*
-         * Jika PIN benar, backend akan
-         * memberikan error "Nama tugas belum diisi".
-         * Jika salah, backend memberikan
-         * "PIN admin salah."
-         */
-
-        if (
-          result.message ===
-          "PIN admin salah."
-        ) {
-
-          showToast(
-            "❌ PIN admin salah."
-          );
-
-          return;
-
-        }
-
-
-        adminLoggedIn = true;
-
-        closeModal(
-          "adminModal"
-        );
-
-        openModal(
-          "taskModal"
-        );
-
-        showToast(
-          "✓ Login admin berhasil."
-        );
-
-
-      } catch (error) {
-
-        showToast(
-          "Gagal memverifikasi PIN."
-        );
-
-      }
-
-    }
-
-
-    /* ==========================================
-       16. ADD TASK
-    ========================================== */
-
-    async function submitTask() {
-
-      if (!adminLoggedIn) {
-
-        showToast(
-          "Anda belum login sebagai admin."
-        );
-
-        return;
-
-      }
-
-
-      const course =
-        document.getElementById(
-          "newTaskCourse"
-        ).value;
-
-      const name =
-        document.getElementById(
-          "newTaskName"
-        ).value.trim();
-
-      const description =
-        document.getElementById(
-          "newTaskDescription"
-        ).value.trim();
-
-      const deadline =
-        document.getElementById(
-          "newTaskDeadline"
-        ).value;
-
-      const link =
-        document.getElementById(
-          "newTaskLink"
-        ).value.trim();
-
-      const source =
-        document.getElementById(
-          "newTaskSource"
-        ).value;
-
-
-      if (!course || !name || !deadline) {
-
-        showToast(
-          "Mata kuliah, nama tugas, dan deadline wajib diisi."
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * Untuk keamanan sederhana versi awal,
-       * PIN disimpan dalam session browser
-       * hanya setelah login.
-       *
-       * Catatan:
-       * Versi berikutnya sebaiknya menggunakan
-       * doPost + token/session.
-       */
-
-      const pin =
-        document.getElementById(
-          "adminPin"
-        ).dataset.pin ||
-        "";
-
-
-      /*
-       * Jika halaman direfresh setelah login,
-       * login admin akan hilang.
-       */
-
-      if (!pin) {
-
-        showToast(
-          "Sesi admin tidak ditemukan. Silakan login kembali."
-        );
-
-        adminLoggedIn = false;
-
-        closeModal(
-          "taskModal"
-        );
-
-        openAdmin();
-
-        return;
-
-      }
-
-
-      try {
-
-        const params =
-          new URLSearchParams({
-
-            action: "addTask",
-
-            pin: pin,
-
-            id_mk: course,
-
-            nama_tugas: name,
-
-            deskripsi: description,
-
-            deadline: deadline,
-
-            link_tugas: link,
-
-            sumber: source
-
-          });
-
-
-        const response =
-          await fetch(
-            API_URL +
-            "?" +
-            params.toString()
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (!result.success) {
-
-          showToast(
-            "❌ " +
-            result.message
-          );
-
-          return;
-
-        }
-
-
-        showToast(
-          "✓ Tugas berhasil ditambahkan."
-        );
-
-
-        closeModal(
-          "taskModal"
-        );
-
-
-        clearTaskForm();
-
-
-        await loadData();
-
-      } catch (error) {
-
-        showToast(
-          "Gagal menambahkan tugas."
-        );
-
-      }
-
-    }
-
-
-    /*
-     * Menyimpan PIN hanya selama
-     * halaman/browser masih aktif.
-     */
-
-    document.getElementById(
-      "adminPin"
-    ).addEventListener(
-      "change",
-      function() {
-
-        this.dataset.pin =
-          this.value.trim();
-
+  const response =
+    await fetch(
+      API_URL,
+      {
+        method: "POST",
+        body
       }
     );
 
 
-    /* ==========================================
-       17. ZOOM
-    ========================================== */
-
-    function openZoom() {
-
-      const link =
-        DATA.pengaturan &&
-        DATA.pengaturan.Link_Zoom;
+  const result =
+    await response.json();
 
 
-      if (!link) {
-
-        showToast(
-          "Link Zoom belum diatur."
-        );
-
-        return;
-
-      }
+  alert(result.message);
 
 
-      window.open(
-        safeURL(link),
-        "_blank",
-        "noopener"
-      );
+  if (result.success) {
 
-    }
+    closeModal("taskModal");
 
+    await loadData();
 
-    /* ==========================================
-       18. NAVIGATION
-    ========================================== */
+  }
 
-    function showSection(
-      sectionId,
-      button
-    ) {
-
-      document
-        .querySelectorAll(
-          ".section"
-        )
-        .forEach(
-          section =>
-            section.classList.remove(
-              "active"
-            )
-        );
+}
 
 
-      document.getElementById(
-        sectionId
-      ).classList.add(
-        "active"
-      );
+/* =================================================
+   SIMPAN ABSEN
+   ================================================= */
+
+async function saveAbsen() {
+
+  const body =
+    new URLSearchParams({
+
+      action:
+        "addAttendance",
+
+      user_id:
+        currentUser.ID,
+
+      pin:
+        currentUser.PIN,
+
+      id_mk:
+        document.getElementById(
+          "absenMK"
+        ).value,
+
+      tanggal:
+        document.getElementById(
+          "absenTanggal"
+        ).value,
+
+      pertemuan:
+        document.getElementById(
+          "absenPertemuan"
+        ).value,
+
+      judul_absen:
+        document.getElementById(
+          "absenJudul"
+        ).value,
+
+      link_absen:
+        document.getElementById(
+          "absenLink"
+        ).value,
+
+      deadline_absen:
+        document.getElementById(
+          "absenDeadline"
+        ).value,
+
+      sumber:
+        document.getElementById(
+          "absenSumber"
+        ).value
+
+    });
 
 
-      document
-        .querySelectorAll(
-          "nav button"
-        )
-        .forEach(
-          btn =>
-            btn.classList.remove(
-              "active"
-            )
-        );
-
-
-      button.classList.add(
-        "active"
-      );
-
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    }
-
-
-    /* ==========================================
-       19. MODAL
-    ========================================== */
-
-    function openModal(id) {
-
-      document.getElementById(
-        id
-      ).classList.add(
-        "show"
-      );
-
-    }
-
-
-    function closeModal(id) {
-
-      document.getElementById(
-        id
-      ).classList.remove(
-        "show"
-      );
-
-    }
-
-
-    window.addEventListener(
-      "click",
-      function(event) {
-
-        document
-          .querySelectorAll(
-            ".modal"
-          )
-          .forEach(modal => {
-
-            if (
-              event.target === modal
-            ) {
-
-              modal.classList.remove(
-                "show"
-              );
-
-            }
-
-          });
-
+  const response =
+    await fetch(
+      API_URL,
+      {
+        method: "POST",
+        body
       }
     );
 
 
-    /* ==========================================
-       20. CLEAR FORM
-    ========================================== */
+  const result =
+    await response.json();
 
-    function clearTaskForm() {
 
-      document.getElementById(
-        "newTaskName"
-      ).value = "";
+  alert(result.message);
 
-      document.getElementById(
-        "newTaskDescription"
-      ).value = "";
 
-      document.getElementById(
-        "newTaskDeadline"
-      ).value = "";
+  if (result.success) {
 
-      document.getElementById(
-        "newTaskLink"
-      ).value = "";
+    closeModal("absenModal");
 
-    }
+    await loadData();
 
+  }
 
-    /* ==========================================
-       21. DATE
-    ========================================== */
+}
 
-    function parseDeadline(value) {
 
-      if (!value) return null;
+/* =================================================
+   SIMPAN MATERI
+   ================================================= */
 
-      /*
-       * Format:
-       * yyyy-MM-dd HH:mm
-       */
+async function saveMateri() {
 
-      const normalized =
-        String(value)
-          .replace(
-            " ",
-            "T"
-          );
+  const body =
+    new URLSearchParams({
 
-      const date =
-        new Date(
-          normalized
-        );
+      action:
+        "addMaterial",
 
+      user_id:
+        currentUser.ID,
 
-      if (!isNaN(date)) {
+      pin:
+        currentUser.PIN,
 
-        return date;
-
-      }
-
-
-      return null;
-
-    }
-
-
-    function formatDateID(value) {
-
-      if (!value) return "-";
-
-      const parts =
-        String(value).split("-");
-
-
-      if (parts.length !== 3) {
-
-        return value;
-
-      }
-
-
-      return (
-        parts[2] +
-        "/" +
-        parts[1] +
-        "/" +
-        parts[0]
-      );
-
-    }
-
-
-    /* ==========================================
-       22. COUNTDOWN
-    ========================================== */
-
-    function countdown(date) {
-
-      if (!date) return "-";
-
-
-      const diff =
-        date - new Date();
-
-
-      if (diff <= 0) {
-
-        return "Deadline sudah lewat";
-
-      }
-
-
-      const totalMinutes =
-        Math.floor(
-          diff / 60000
-        );
-
-
-      const days =
-        Math.floor(
-          totalMinutes / 1440
-        );
-
-      const hours =
-        Math.floor(
-          (totalMinutes % 1440) / 60
-        );
-
-      const minutes =
-        totalMinutes % 60;
-
-
-      if (days > 0) {
-
-        return (
-          days +
-          " hari " +
-          hours +
-          " jam lagi"
-        );
-
-      }
-
-
-      if (hours > 0) {
-
-        return (
-          hours +
-          " jam " +
-          minutes +
-          " menit lagi"
-        );
-
-      }
-
-
-      return (
-        minutes +
-        " menit lagi"
-      );
-
-    }
-
-
-    /* ==========================================
-       23. ACTIVE VALUE
-    ========================================== */
-
-    function isActive(value) {
-
-      return (
-        value === true ||
-        value === "TRUE" ||
-        value === "true" ||
-        value === 1
-      );
-
-    }
-
-
-    /* ==========================================
-       24. EMPTY
-    ========================================== */
-
-    function emptyMessage(text) {
-
-      return `
-        <div class="empty">
-          ${escapeHTML(text)}
-        </div>
-      `;
-
-    }
-
-
-    /* ==========================================
-       25. TOAST
-    ========================================== */
-
-    let toastTimer;
-
-
-    function showToast(message) {
-
-      const toast =
+      id_mk:
         document.getElementById(
-          "toast"
-        );
+          "materiMK"
+        ).value,
+
+      pertemuan:
+        document.getElementById(
+          "materiPertemuan"
+        ).value,
+
+      judul:
+        document.getElementById(
+          "materiJudul"
+        ).value,
+
+      jenis:
+        document.getElementById(
+          "materiJenis"
+        ).value,
+
+      link:
+        document.getElementById(
+          "materiLink"
+        ).value,
+
+      keterangan:
+        document.getElementById(
+          "materiKeterangan"
+        ).value
+
+    });
 
 
-      toast.textContent =
-        message;
+  const response =
+    await fetch(
+      API_URL,
+      {
+        method: "POST",
+        body
+      }
+    );
 
 
-      toast.style.display =
-        "block";
+  const result =
+    await response.json();
 
 
-      clearTimeout(
-        toastTimer
+  alert(result.message);
+
+
+  if (result.success) {
+
+    closeModal("materiModal");
+
+    await loadData();
+
+  }
+
+}
+
+
+/* =================================================
+   UTILITAS
+   ================================================= */
+
+function findMK(id) {
+
+  return data.mataKuliah.find(
+    m =>
+      String(m.ID) ===
+      String(id)
+  );
+
+}
+
+
+function copyLink(link) {
+
+  navigator.clipboard
+    .writeText(link)
+    .then(() => {
+
+      alert(
+        "Link berhasil disalin."
       );
 
+    });
 
-      toastTimer =
-        setTimeout(
-          () => {
-
-            toast.style.display =
-              "none";
-
-          },
-          3000
-        );
-
-    }
+}
 
 
-    /* ==========================================
-       26. SECURITY HELPERS
-    ========================================== */
+function showTab(name) {
 
-    function escapeHTML(value) {
-
-      return String(
-        value ?? ""
-      )
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-
-    }
+  const sections = [
+    "dashboard",
+    "jadwal",
+    "tugas",
+    "absen",
+    "materi",
+    "kelola"
+  ];
 
 
-    function escapeJS(value) {
+  sections.forEach(id => {
 
-      return String(
-        value ?? ""
-      )
-        .replace(
-          /\\/g,
-          "\\\\"
-        )
-        .replace(
-          /'/g,
-          "\\'"
-        );
+    document
+      .getElementById(id)
+      .classList.add("hidden");
 
-    }
+  });
 
 
-    function safeURL(value) {
+  document
+    .getElementById(name)
+    .classList.remove("hidden");
 
-      try {
-
-        const url =
-          new URL(value);
-
-        if (
-          url.protocol === "http:" ||
-          url.protocol === "https:"
-        ) {
-
-          return url.href;
-
-        }
-
-      } catch {}
-
-      return "#";
-
-    }
+}
 
 
-  </script>
+function openModal(id) {
+
+  document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+}
+
+
+function closeModal(id) {
+
+  document
+    .getElementById(id)
+    .classList.add("hidden");
+
+}
+
+</script>
 
 </body>
 </html>
