@@ -1,100 +1,307 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Manajemen Kuliah</title>
 
 <style>
-
+/* =========================================================
+   RESET
+========================================================= */
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #0b1120;
   color: #e5e7eb;
 }
 
-header {
-  padding: 20px;
-  background: #111827;
-  border-bottom: 1px solid #374151;
-}
-
-header h1 {
-  margin: 0 0 5px;
-}
-
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
-
-nav {
+/* =========================================================
+   LAYOUT
+========================================================= */
+.app {
+  min-height: 100vh;
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  margin-bottom: 20px;
 }
 
-nav button {
+.sidebar {
+  width: 250px;
+  background: #111827;
+  border-right: 1px solid #263244;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+.logo {
+  padding: 24px 20px;
+  border-bottom: 1px solid #263244;
+}
+
+.logo-title {
+  font-size: 21px;
+  font-weight: bold;
+  color: #60a5fa;
+}
+
+.logo-subtitle {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.menu {
+  padding: 15px 12px;
+  flex: 1;
+}
+
+.menu-title {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin: 12px 10px 7px;
+}
+
+.menu button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #cbd5e1;
+  padding: 12px 13px;
+  border-radius: 9px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.menu button:hover {
   background: #1f2937;
+}
+
+.menu button.active {
+  background: #2563eb;
   color: white;
+}
+
+.sidebar-user {
+  padding: 15px;
+  border-top: 1px solid #263244;
+}
+
+.sidebar-user-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sidebar-user-role {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.logout-btn {
+  width: 100%;
+  margin-top: 12px;
   border: 1px solid #374151;
-  padding: 10px 15px;
+  background: #1f2937;
+  color: #fca5a5;
+  padding: 9px;
   border-radius: 8px;
   cursor: pointer;
-  white-space: nowrap;
 }
 
-nav button.active {
+/* =========================================================
+   TOPBAR
+========================================================= */
+.topbar {
+  height: 72px;
+  background: #111827;
+  border-bottom: 1px solid #263244;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.page-subtitle {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.user-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
   background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
+/* =========================================================
+   CONTENT
+========================================================= */
+.content {
+  padding: 25px 28px 40px;
+  max-width: 1600px;
+}
+
+section {
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   CARD
+========================================================= */
 .card {
   background: #111827;
-  border: 1px solid #374151;
+  border: 1px solid #263244;
   border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 15px;
+  padding: 19px;
+  margin-bottom: 16px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns:
-    repeat(auto-fit, minmax(220px, 1fr));
-  gap: 15px;
+.card h2,
+.card h3 {
+  margin-top: 0;
 }
 
-.stat {
-  font-size: 28px;
-  font-weight: bold;
+.card h3 {
+  margin-bottom: 8px;
 }
 
 .muted {
   color: #9ca3af;
 }
 
+.small {
+  font-size: 12px;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  min-height: 125px;
+}
+
+.stat-label {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.stat {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.stat-blue {
+  color: #60a5fa;
+}
+
+.stat-green {
+  color: #4ade80;
+}
+
+.stat-orange {
+  color: #fbbf24;
+}
+
+.stat-red {
+  color: #f87171;
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
 button,
-a.btn {
+.btn {
   border: 0;
   border-radius: 8px;
   padding: 9px 13px;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
+  font-size: 13px;
 }
 
 .btn-primary {
   background: #2563eb;
   color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
 }
 
 .btn-success {
@@ -112,22 +319,52 @@ a.btn {
   color: white;
 }
 
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 12px;
-  border-radius: 7px;
-  border: 1px solid #4b5563;
-  background: #1f2937;
+.btn-secondary {
+  background: #374151;
   color: white;
 }
 
-label {
+/* =========================================================
+   ZOOM
+========================================================= */
+.zoom-card {
+  background: linear-gradient(
+    135deg,
+    #172554,
+    #111827
+  );
+  border: 1px solid #1d4ed8;
+  padding: 22px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.zoom-title {
+  color: #60a5fa;
   font-size: 13px;
-  color: #d1d5db;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.zoom-link {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 7px 0 15px;
+}
+
+/* =========================================================
+   TASK
+========================================================= */
+.task-card {
+  position: relative;
+}
+
+.task-card.done {
+  border-left: 5px solid #22c55e;
+}
+
+.task-card.todo {
+  border-left: 5px solid #ef4444;
 }
 
 .status-done {
@@ -140,26 +377,142 @@ label {
   font-weight: bold;
 }
 
+.deadline {
+  display: inline-block;
+  background: #1f2937;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.deadline-danger {
+  color: #f87171;
+}
+
+.deadline-safe {
+  color: #4ade80;
+}
+
+/* =========================================================
+   JADWAL
+========================================================= */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.day-card {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.day-header {
+  background: #1e293b;
+  padding: 13px 15px;
+  font-weight: bold;
+  color: #60a5fa;
+}
+
+.schedule-item {
+  padding: 15px;
+  border-top: 1px solid #263244;
+}
+
+.schedule-time {
+  font-weight: bold;
+  color: #fbbf24;
+  font-size: 13px;
+}
+
+.schedule-name {
+  font-weight: bold;
+  margin-top: 7px;
+}
+
+.schedule-lecturer {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* =========================================================
+   ABSEN
+========================================================= */
 .absen-card {
   border-left: 5px solid #ef4444;
 }
 
-.task-card.done {
-  border-left: 5px solid #22c55e;
+.absen-title {
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.task-card.todo {
-  border-left: 5px solid #ef4444;
+.absen-info {
+  margin: 8px 0;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
-.hidden {
-  display: none !important;
+/* =========================================================
+   MATERI
+========================================================= */
+.material-card {
+  border-left: 5px solid #8b5cf6;
 }
 
+.material-type {
+  display: inline-block;
+  background: #312e81;
+  color: #c4b5fd;
+  padding: 4px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  border-radius: 7px;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: white;
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #2563eb;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+label {
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.75);
+  background: rgba(0,0,0,.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,10 +522,11 @@ label {
 
 .modal-box {
   width: 100%;
-  max-width: 550px;
+  max-width: 560px;
   background: #111827;
-  padding: 20px;
-  border-radius: 12px;
+  border: 1px solid #374151;
+  padding: 22px;
+  border-radius: 13px;
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -183,325 +537,745 @@ label {
   color: white;
 }
 
-.small {
-  font-size: 13px;
+/* =========================================================
+   LOGIN
+========================================================= */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at top right,
+      #1e3a8a,
+      transparent 35%
+    ),
+    #0b1120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 2000;
 }
 
-</style>
+.login-box {
+  width: 100%;
+  max-width: 410px;
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
 
+.login-logo {
+  font-size: 27px;
+  font-weight: bold;
+  color: #60a5fa;
+  margin-bottom: 5px;
+}
+
+.login-subtitle {
+  color: #9ca3af;
+  margin-bottom: 25px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  font-weight: bold;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+.toast-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 3000;
+}
+
+.toast {
+  background: #1f2937;
+  border: 1px solid #374151;
+  color: white;
+  padding: 13px 16px;
+  border-radius: 9px;
+  margin-top: 8px;
+  min-width: 260px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.toast.success {
+  border-left: 4px solid #22c55e;
+}
+
+.toast.error {
+  border-left: 4px solid #ef4444;
+}
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+.empty {
+  padding: 25px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.loading {
+  padding: 25px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+.mobile-menu {
+  display: none;
+  background: #1f2937;
+  color: white;
+  border: 1px solid #374151;
+}
+
+@media (max-width: 1100px) {
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .schedule-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 760px) {
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: .25s;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .topbar {
+    padding: 0 15px;
+  }
+
+  .content {
+    padding: 18px 15px 30px;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .user-top {
+    display: none;
+  }
+
+  .grid,
+  .grid-2,
+  .grid-3,
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 17px;
+  }
+
+}
+</style>
 </head>
 
 <body>
 
-<header>
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
-  <h1 id="appName">
-    Manajemen Kuliah
-  </h1>
+<div id="loginScreen" class="login-screen">
 
-  <div class="muted" id="userInfo">
-    Belum login
-  </div>
+  <div class="login-box">
 
-</header>
-
-
-<div class="container">
-
-<nav>
-
-  <button onclick="showTab('dashboard')">
-    🏠 Dashboard
-  </button>
-
-  <button onclick="showTab('jadwal')">
-    📅 Jadwal
-  </button>
-
-  <button onclick="showTab('tugas')">
-    📝 Tugas
-  </button>
-
-  <button onclick="showTab('absen')">
-    📌 Absen
-  </button>
-
-  <button onclick="showTab('materi')">
-    📚 Materi
-  </button>
-
-  <button
-    id="btnKelola"
-    class="hidden"
-    onclick="showTab('kelola')">
-
-    ⚙️ Kelola
-
-  </button>
-
-</nav>
-
-
-<!-- =================================================
-     DASHBOARD
-     ================================================= -->
-
-<section id="dashboard">
-
-  <div class="grid">
-
-    <div class="card">
-      <div class="muted">
-        Mata Kuliah
-      </div>
-      <div class="stat"
-           id="jumlahMK">
-        0
-      </div>
+    <div class="login-logo">
+      🎓 Manajemen Kuliah
     </div>
 
-    <div class="card">
-      <div class="muted">
-        Total Tugas
-      </div>
-      <div class="stat"
-           id="jumlahTugas">
-        0
-      </div>
+    <div class="login-subtitle">
+      Sistem manajemen perkuliahan
     </div>
-
-    <div class="card">
-      <div class="muted">
-        Tugas Selesai
-      </div>
-      <div class="stat"
-           id="jumlahSelesai">
-        0
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="muted">
-        Tugas Belum
-      </div>
-      <div class="stat"
-           id="jumlahBelum">
-        0
-      </div>
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🔴 Absen Terbaru</h2>
-
-    <div id="dashboardAbsen">
-      Memuat...
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>⏰ Tugas Terdekat</h2>
-
-    <div id="dashboardTugas">
-      Memuat...
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     JADWAL
-     ================================================= -->
-
-<section id="jadwal"
-         class="hidden">
-
-  <div class="card">
-
-    <h2>📅 Jadwal Kuliah</h2>
-
-    <div id="jadwalList">
-      Memuat...
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     TUGAS
-     ================================================= -->
-
-<section id="tugas"
-         class="hidden">
-
-  <div class="card">
-
-    <h2>📝 Tugas Kuliah</h2>
-
-    <p class="muted">
-      Checklist ini adalah status tugas pribadi Anda.
-    </p>
-
-    <div id="tugasList">
-      Memuat...
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     ABSEN
-     ================================================= -->
-
-<section id="absen"
-         class="hidden">
-
-  <div class="card">
-
-    <h2>📌 Link Absen</h2>
-
-    <p class="muted">
-      Link absen yang dikirim di WhatsApp
-      disimpan di sini agar tidak tenggelam.
-    </p>
-
-    <div id="absenList">
-      Memuat...
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     MATERI
-     ================================================= -->
-
-<section id="materi"
-         class="hidden">
-
-  <div class="card">
-
-    <h2>📚 Materi Kuliah</h2>
-
-    <div id="materiList">
-      Memuat...
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     KELOLA
-     ================================================= -->
-
-<section id="kelola"
-         class="hidden">
-
-  <div class="card">
-
-    <h2>⚙️ Kelola Kuliah</h2>
-
-    <p class="muted">
-      Fitur ini hanya tersedia untuk ADMIN dan KETUA.
-    </p>
-
-
-    <div class="grid">
-
-      <button
-        class="btn-primary"
-        onclick="openModal('taskModal')">
-
-        ➕ Tambah Tugas
-
-      </button>
-
-
-      <button
-        class="btn-primary"
-        onclick="openModal('absenModal')">
-
-        📌 Tambah Link Absen
-
-      </button>
-
-
-      <button
-        class="btn-primary"
-        onclick="openModal('materiModal')">
-
-        📚 Tambah Materi
-
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- =================================================
-     LOGIN MODAL
-     ================================================= -->
-
-<div class="modal"
-     id="loginModal">
-
-  <div class="modal-box">
-
-    <h2>Login</h2>
 
     <label>ID Pengguna</label>
 
     <input
       id="loginUser"
-      placeholder="Contoh U001">
-
+      type="text"
+      placeholder="Contoh: U001"
+      autocomplete="username">
 
     <label>PIN</label>
 
     <input
       id="loginPin"
       type="password"
-      placeholder="PIN">
-
+      placeholder="Masukkan PIN"
+      autocomplete="current-password">
 
     <button
-      class="btn-primary"
+      class="btn-primary login-btn"
       onclick="login()">
 
-      Login
+      🔐 Masuk
 
     </button>
+
+    <p
+      id="loginStatus"
+      class="muted small"
+      style="margin-top:15px;">
+    </p>
 
   </div>
 
 </div>
 
 
-<!-- =================================================
-     TASK MODAL
-     ================================================= -->
+<!-- =========================================================
+     APP
+========================================================= -->
 
-<div class="modal hidden"
-     id="taskModal">
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR -->
+
+  <aside id="sidebar" class="sidebar">
+
+    <div class="logo">
+
+      <div class="logo-title">
+        🎓 Manajemen Kuliah
+      </div>
+
+      <div class="logo-subtitle">
+        PTI PKA 06
+      </div>
+
+    </div>
+
+
+    <div class="menu">
+
+      <div class="menu-title">
+        Menu Utama
+      </div>
+
+      <button
+        id="menu-dashboard"
+        class="active"
+        onclick="showTab('dashboard')">
+
+        🏠 Dashboard
+
+      </button>
+
+      <button
+        id="menu-jadwal"
+        onclick="showTab('jadwal')">
+
+        📅 Jadwal Kuliah
+
+      </button>
+
+      <button
+        id="menu-tugas"
+        onclick="showTab('tugas')">
+
+        📝 Tugas Kuliah
+
+      </button>
+
+      <button
+        id="menu-absen"
+        onclick="showTab('absen')">
+
+        📌 Absen Dosen
+
+      </button>
+
+      <button
+        id="menu-materi"
+        onclick="showTab('materi')">
+
+        📚 Materi
+
+      </button>
+
+
+      <div
+        id="managerMenu"
+        class="hidden">
+
+        <div class="menu-title">
+          Pengelolaan
+        </div>
+
+        <button
+          id="menu-kelola"
+          onclick="showTab('kelola')">
+
+          ⚙️ Kelola Kuliah
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="sidebar-user">
+
+      <div
+        id="sideUserName"
+        class="sidebar-user-name">
+
+        -
+
+      </div>
+
+      <div
+        id="sideUserRole"
+        class="sidebar-user-role">
+
+        -
+
+      </div>
+
+      <button
+        class="logout-btn"
+        onclick="logout()">
+
+        ↪ Keluar
+
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div style="display:flex;align-items:center;gap:12px;">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()">
+
+          ☰
+
+        </button>
+
+        <div>
+
+          <div
+            id="pageTitle"
+            class="page-title">
+
+            Dashboard
+
+          </div>
+
+          <div
+            id="pageSubtitle"
+            class="page-subtitle">
+
+            Ringkasan aktivitas kuliah
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="user-top">
+
+        <div
+          id="avatar"
+          class="avatar">
+
+          ?
+
+        </div>
+
+        <div>
+
+          <div id="topUserName">
+            -
+          </div>
+
+          <div
+            id="topUserRole"
+            class="muted small">
+
+            -
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <!-- =================================================
+           DASHBOARD
+      ================================================= -->
+
+      <section id="dashboard">
+
+        <div id="zoomArea"></div>
+
+
+        <div class="grid">
+
+          <div class="card stat-card">
+
+            <div class="stat-label">
+              Mata Kuliah Aktif
+            </div>
+
+            <div
+              id="jumlahMK"
+              class="stat stat-blue">
+
+              0
+
+            </div>
+
+          </div>
+
+
+          <div class="card stat-card">
+
+            <div class="stat-label">
+              Total Tugas
+            </div>
+
+            <div
+              id="jumlahTugas"
+              class="stat stat-orange">
+
+              0
+
+            </div>
+
+          </div>
+
+
+          <div class="card stat-card">
+
+            <div class="stat-label">
+              Tugas Selesai
+            </div>
+
+            <div
+              id="jumlahSelesai"
+              class="stat stat-green">
+
+              0
+
+            </div>
+
+          </div>
+
+
+          <div class="card stat-card">
+
+            <div class="stat-label">
+              Tugas Belum Selesai
+            </div>
+
+            <div
+              id="jumlahBelum"
+              class="stat stat-red">
+
+              0
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="grid-2">
+
+          <div class="card">
+
+            <h2>
+              📅 Kuliah Terdekat
+            </h2>
+
+            <div id="dashboardJadwal">
+              <div class="loading">
+                Memuat...
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <h2>
+              ⏰ Tugas Terdekat
+            </h2>
+
+            <div id="dashboardTugas">
+              <div class="loading">
+                Memuat...
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="card">
+
+          <h2>
+            📌 Absen Terbaru
+          </h2>
+
+          <div id="dashboardAbsen">
+            <div class="loading">
+              Memuat...
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           JADWAL
+      ================================================= -->
+
+      <section
+        id="jadwal"
+        class="hidden">
+
+        <div class="card">
+
+          <h2>
+            📅 Jadwal Kuliah
+          </h2>
+
+          <p class="muted">
+            Jadwal perkuliahan Jumat, Sabtu, dan Minggu.
+          </p>
+
+        </div>
+
+        <div
+          id="jadwalList"
+          class="schedule-grid">
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           TUGAS
+      ================================================= -->
+
+      <section
+        id="tugas"
+        class="hidden">
+
+        <div class="card">
+
+          <h2>
+            📝 Tugas Kuliah
+          </h2>
+
+          <p class="muted">
+            Status tugas di bawah ini bersifat pribadi.
+            Hanya Anda yang dapat melihat checklist Anda sendiri.
+          </p>
+
+        </div>
+
+        <div
+          id="tugasList">
+
+          <div class="loading">
+            Memuat...
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           ABSEN
+      ================================================= -->
+
+      <section
+        id="absen"
+        class="hidden">
+
+        <div class="card">
+
+          <h2>
+            📌 Absen Dosen
+          </h2>
+
+          <p class="muted">
+            Link absensi resmi dari dosen yang sebelumnya
+            dikirim melalui WhatsApp.
+          </p>
+
+        </div>
+
+        <div id="absenList">
+
+          <div class="loading">
+            Memuat...
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           MATERI
+      ================================================= -->
+
+      <section
+        id="materi"
+        class="hidden">
+
+        <div class="card">
+
+          <h2>
+            📚 Materi Kuliah
+          </h2>
+
+          <p class="muted">
+            Kumpulan materi berdasarkan mata kuliah dan pertemuan.
+          </p>
+
+        </div>
+
+        <div
+          id="materiList"
+          class="grid-2">
+
+          <div class="loading">
+            Memuat...
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           KELOLA
+      ================================================= -->
+
+      <section
+        id="kelola"
+        class="hidden">
+
+        <div class="card">
+
+          <h2>
+            ⚙️ Kelola Kuliah
+          </h2>
+
+          <p class="muted">
+            Fitur berikut hanya dapat digunakan oleh ADMIN dan KETUA.
+          </p>
+
+        </div>
+
+
+        <div class="grid-3">
+
+          <button
+            class="btn-primary"
+            onclick="openModal('taskModal')">
+
+            ➕ Tambah Tugas
+
+          </button>
+
+
+          <button
+            class="btn-primary"
+            onclick="openModal('absenModal')">
+
+            📌 Tambah Link Absen
+
+          </button>
+
+
+          <button
+            class="btn-primary"
+            onclick="openModal('materiModal')">
+
+            📚 Tambah Materi
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL TUGAS
+========================================================= -->
+
+<div
+  id="taskModal"
+  class="modal hidden">
 
   <div class="modal-box">
 
@@ -509,27 +1283,25 @@ label {
       class="close"
       onclick="closeModal('taskModal')">
 
-      X
+      ✕
 
     </button>
 
-    <h2>Tambah Tugas</h2>
-
+    <h2>
+      ➕ Tambah Tugas
+    </h2>
 
     <label>Mata Kuliah</label>
 
     <select id="taskMK"></select>
 
-
     <label>Nama Tugas</label>
 
     <input id="taskNama">
 
-
     <label>Deskripsi</label>
 
     <textarea id="taskDeskripsi"></textarea>
-
 
     <label>Deadline</label>
 
@@ -537,11 +1309,11 @@ label {
       id="taskDeadline"
       type="datetime-local">
 
-
     <label>Link Tugas</label>
 
-    <input id="taskLink">
-
+    <input
+      id="taskLink"
+      placeholder="https://classroom.google.com/...">
 
     <label>Sumber</label>
 
@@ -549,12 +1321,11 @@ label {
       id="taskSumber"
       value="Google Classroom">
 
-
     <button
       class="btn-success"
       onclick="saveTask()">
 
-      Simpan Tugas
+      💾 Simpan Tugas
 
     </button>
 
@@ -563,12 +1334,13 @@ label {
 </div>
 
 
-<!-- =================================================
-     ABSEN MODAL
-     ================================================= -->
+<!-- =========================================================
+     MODAL ABSEN
+========================================================= -->
 
-<div class="modal hidden"
-     id="absenModal">
+<div
+  id="absenModal"
+  class="modal hidden">
 
   <div class="modal-box">
 
@@ -576,17 +1348,17 @@ label {
       class="close"
       onclick="closeModal('absenModal')">
 
-      X
+      ✕
 
     </button>
 
-    <h2>Tambah Link Absen</h2>
-
+    <h2>
+      📌 Tambah Link Absen
+    </h2>
 
     <label>Mata Kuliah</label>
 
     <select id="absenMK"></select>
-
 
     <label>Tanggal</label>
 
@@ -594,13 +1366,11 @@ label {
       id="absenTanggal"
       type="date">
 
-
     <label>Pertemuan</label>
 
     <input
       id="absenPertemuan"
       type="number">
-
 
     <label>Judul Absen</label>
 
@@ -608,13 +1378,11 @@ label {
       id="absenJudul"
       placeholder="Absensi Pertemuan 2">
 
-
     <label>Link Absen</label>
 
     <input
       id="absenLink"
       placeholder="https://...">
-
 
     <label>Deadline Absen</label>
 
@@ -622,19 +1390,17 @@ label {
       id="absenDeadline"
       type="datetime-local">
 
-
     <label>Sumber</label>
 
     <input
       id="absenSumber"
       value="WhatsApp">
 
-
     <button
       class="btn-success"
       onclick="saveAbsen()">
 
-      Simpan Absen
+      💾 Simpan Absen
 
     </button>
 
@@ -643,12 +1409,13 @@ label {
 </div>
 
 
-<!-- =================================================
-     MATERI MODAL
-     ================================================= -->
+<!-- =========================================================
+     MODAL MATERI
+========================================================= -->
 
-<div class="modal hidden"
-     id="materiModal">
+<div
+  id="materiModal"
+  class="modal hidden">
 
   <div class="modal-box">
 
@@ -656,17 +1423,17 @@ label {
       class="close"
       onclick="closeModal('materiModal')">
 
-      X
+      ✕
 
     </button>
 
-    <h2>Tambah Materi</h2>
-
+    <h2>
+      📚 Tambah Materi
+    </h2>
 
     <label>Mata Kuliah</label>
 
     <select id="materiMK"></select>
-
 
     <label>Pertemuan</label>
 
@@ -674,11 +1441,9 @@ label {
       id="materiPertemuan"
       type="number">
 
-
     <label>Judul Materi</label>
 
     <input id="materiJudul">
-
 
     <label>Jenis</label>
 
@@ -692,22 +1457,21 @@ label {
 
     </select>
 
-
     <label>Link</label>
 
-    <input id="materiLink">
-
+    <input
+      id="materiLink"
+      placeholder="https://drive.google.com/...">
 
     <label>Keterangan</label>
 
     <textarea id="materiKeterangan"></textarea>
 
-
     <button
       class="btn-success"
       onclick="saveMateri()">
 
-      Simpan Materi
+      💾 Simpan Materi
 
     </button>
 
@@ -716,18 +1480,29 @@ label {
 </div>
 
 
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+  id="toastContainer"
+  class="toast-container">
 </div>
 
 
 <script>
 
-/* =================================================
+/* =========================================================
    KONFIGURASI
-   ================================================= */
+========================================================= */
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxKG4COO5k_2DDjLf4beOyClYwgp7O926aBF4tYbtoxyd4hXtadLRi0Yeihisz-o0W_ig/exec";
 
+
+/* =========================================================
+   DATA
+========================================================= */
 
 let data = {
 
@@ -735,19 +1510,19 @@ let data = {
   jadwal: [],
   tugas: [],
   materi: [],
-  absensi: []
+  absensi: [],
+  pengaturan: {}
 
 };
-
 
 let statusTugas = [];
 
 let currentUser = null;
 
 
-/* =================================================
+/* =========================================================
    START
-   ================================================= */
+========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -761,20 +1536,56 @@ async function start() {
 
   await loadData();
 
-  if (!currentUser) {
+  if (currentUser) {
 
-    document
-      .getElementById("loginModal")
-      .classList.remove("hidden");
+    showApp();
+
+    await loadStatusTugas();
+
+    renderAll();
+
+  } else {
+
+    showLogin();
 
   }
 
 }
 
 
-/* =================================================
+/* =========================================================
+   LOGIN SCREEN
+========================================================= */
+
+function showLogin() {
+
+  document
+    .getElementById("loginScreen")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("app")
+    .classList.add("hidden");
+
+}
+
+
+function showApp() {
+
+  document
+    .getElementById("loginScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
    LOAD DATA
-   ================================================= */
+========================================================= */
 
 async function loadData() {
 
@@ -788,19 +1599,39 @@ async function loadData() {
     const result =
       await response.json();
 
-
     if (!result.success) {
 
-      alert(result.message);
+      showToast(
+        result.message ||
+        "Gagal mengambil data.",
+        "error"
+      );
 
       return;
 
     }
 
+    data = {
 
-    data =
-      result;
+      mataKuliah:
+        result.mataKuliah || [],
 
+      jadwal:
+        result.jadwal || [],
+
+      tugas:
+        result.tugas || [],
+
+      materi:
+        result.materi || [],
+
+      absensi:
+        result.absensi || [],
+
+      pengaturan:
+        result.pengaturan || {}
+
+    };
 
     renderAll();
 
@@ -808,8 +1639,9 @@ async function loadData() {
 
     console.error(error);
 
-    alert(
-      "Gagal mengambil data dari server."
+    showToast(
+      "Gagal terhubung ke Apps Script.",
+      "error"
     );
 
   }
@@ -817,9 +1649,9 @@ async function loadData() {
 }
 
 
-/* =================================================
+/* =========================================================
    SESSION
-   ================================================= */
+========================================================= */
 
 function loadSession() {
 
@@ -828,14 +1660,22 @@ function loadSession() {
       "kuliah_user"
     );
 
-  if (saved) {
+  if (!saved) return;
+
+  try {
 
     currentUser =
       JSON.parse(saved);
 
     updateUserUI();
 
-    loadStatusTugas();
+  } catch (error) {
+
+    localStorage.removeItem(
+      "kuliah_user"
+    );
+
+    currentUser = null;
 
   }
 
@@ -852,145 +1692,249 @@ function saveSession() {
 }
 
 
+function logout() {
+
+  localStorage.removeItem(
+    "kuliah_user"
+  );
+
+  currentUser = null;
+
+  statusTugas = [];
+
+  document
+    .getElementById("loginUser")
+    .value = "";
+
+  document
+    .getElementById("loginPin")
+    .value = "";
+
+  showLogin();
+
+  showToast(
+    "Anda telah keluar.",
+    "success"
+  );
+
+}
+
+
+/* =========================================================
+   USER UI
+========================================================= */
+
 function updateUserUI() {
 
   if (!currentUser) return;
 
+  const name =
+    currentUser.Nama ||
+    "Pengguna";
+
+  const role =
+    currentUser.Role ||
+    "ANGGOTA";
 
   document.getElementById(
-    "userInfo"
+    "sideUserName"
+  ).textContent = name;
+
+  document.getElementById(
+    "sideUserRole"
+  ).textContent = role;
+
+  document.getElementById(
+    "topUserName"
+  ).textContent = name;
+
+  document.getElementById(
+    "topUserRole"
+  ).textContent = role;
+
+  document.getElementById(
+    "avatar"
   ).textContent =
-    currentUser.Nama +
-    " • " +
-    currentUser.Role;
+    name.substring(0, 1).toUpperCase();
 
 
   if (
-    currentUser.Role === "ADMIN" ||
-    currentUser.Role === "KETUA"
+    role === "ADMIN" ||
+    role === "KETUA"
   ) {
 
     document
-      .getElementById("btnKelola")
+      .getElementById("managerMenu")
       .classList.remove("hidden");
+
+  } else {
+
+    document
+      .getElementById("managerMenu")
+      .classList.add("hidden");
 
   }
 
 }
 
 
-/* =================================================
+/* =========================================================
    LOGIN
-   ================================================= */
+========================================================= */
 
 async function login() {
 
   const userId =
-    document.getElementById(
-      "loginUser"
-    ).value.trim();
-
+    document
+      .getElementById("loginUser")
+      .value
+      .trim();
 
   const pin =
-    document.getElementById(
-      "loginPin"
-    ).value.trim();
+    document
+      .getElementById("loginPin")
+      .value
+      .trim();
 
 
   if (!userId || !pin) {
 
-    alert(
-      "ID dan PIN wajib diisi."
-    );
+    document.getElementById(
+      "loginStatus"
+    ).textContent =
+      "ID pengguna dan PIN wajib diisi.";
 
     return;
 
   }
 
 
-  const response =
-    await fetch(
+  document.getElementById(
+    "loginStatus"
+  ).textContent =
+    "Menghubungkan ke server...";
+
+
+  try {
+
+    const url =
       API_URL +
       "?action=login" +
       "&user_id=" +
       encodeURIComponent(userId) +
       "&pin=" +
-      encodeURIComponent(pin)
+      encodeURIComponent(pin);
+
+
+    const response =
+      await fetch(url);
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      document.getElementById(
+        "loginStatus"
+      ).textContent =
+        result.message ||
+        "Login gagal.";
+
+      return;
+
+    }
+
+
+    currentUser = {
+
+      ...result.user,
+
+      PIN: pin
+
+    };
+
+
+    saveSession();
+
+    updateUserUI();
+
+    showApp();
+
+    document.getElementById(
+      "loginStatus"
+    ).textContent = "";
+
+
+    await loadStatusTugas();
+
+    renderAll();
+
+    showToast(
+      "Login berhasil. Selamat datang, " +
+      currentUser.Nama,
+      "success"
     );
 
 
-  const result =
-    await response.json();
+  } catch (error) {
 
+    console.error(error);
 
-  if (!result.success) {
-
-    alert(result.message);
-
-    return;
+    document.getElementById(
+      "loginStatus"
+    ).textContent =
+      "Tidak dapat terhubung ke server.";
 
   }
-
-
-  currentUser = {
-
-    ...result.user,
-
-    PIN: pin
-
-  };
-
-
-  saveSession();
-
-  updateUserUI();
-
-  document
-    .getElementById("loginModal")
-    .classList.add("hidden");
-
-
-  await loadStatusTugas();
-
-  renderAll();
 
 }
 
 
-/* =================================================
+/* =========================================================
    STATUS TUGAS
-   ================================================= */
+========================================================= */
 
 async function loadStatusTugas() {
 
   if (!currentUser) return;
 
 
-  const url =
-    API_URL +
-    "?action=statusTugas" +
-    "&user_id=" +
-    encodeURIComponent(
-      currentUser.ID
-    ) +
-    "&pin=" +
-    encodeURIComponent(
-      currentUser.PIN
+  try {
+
+    const url =
+      API_URL +
+      "?action=statusTugas" +
+      "&user_id=" +
+      encodeURIComponent(
+        currentUser.ID
+      ) +
+      "&pin=" +
+      encodeURIComponent(
+        currentUser.PIN
+      );
+
+
+    const response =
+      await fetch(url);
+
+    const result =
+      await response.json();
+
+
+    if (result.success) {
+
+      statusTugas =
+        result.data || [];
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Status tugas:",
+      error
     );
-
-
-  const response =
-    await fetch(url);
-
-
-  const result =
-    await response.json();
-
-
-  if (result.success) {
-
-    statusTugas =
-      result.data || [];
 
   }
 
@@ -1006,9 +1950,8 @@ function getTaskStatus(taskId) {
         String(taskId)
     );
 
-
   return item
-    ? item.Status
+    ? String(item.Status).toUpperCase()
     : "BELUM";
 
 }
@@ -1018,9 +1961,7 @@ async function toggleTask(taskId) {
 
   if (!currentUser) {
 
-    alert(
-      "Silakan login terlebih dahulu."
-    );
+    showLogin();
 
     return;
 
@@ -1037,64 +1978,90 @@ async function toggleTask(taskId) {
       : "SELESAI";
 
 
-  const body =
-    new URLSearchParams({
+  try {
 
-      action:
-        "updateStatusTugas",
+    const body =
+      new URLSearchParams({
 
-      user_id:
-        currentUser.ID,
+        action:
+          "updateStatusTugas",
 
-      pin:
-        currentUser.PIN,
+        user_id:
+          currentUser.ID,
 
-      id_tugas:
-        taskId,
+        pin:
+          currentUser.PIN,
 
-      status:
-        newStatus
+        id_tugas:
+          taskId,
 
-    });
+        status:
+          newStatus
+
+      });
 
 
-  const response =
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-        body: body
-      }
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+          body
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!result.success) {
+
+      showToast(
+        result.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    await loadStatusTugas();
+
+    renderTugas();
+
+    renderDashboard();
+
+    showToast(
+      newStatus === "SELESAI"
+        ? "Tugas ditandai selesai."
+        : "Tugas dikembalikan menjadi belum selesai.",
+      "success"
     );
 
 
-  const result =
-    await response.json();
+  } catch (error) {
 
+    console.error(error);
 
-  if (!result.success) {
-
-    alert(result.message);
-
-    return;
+    showToast(
+      "Gagal memperbarui status tugas.",
+      "error"
+    );
 
   }
-
-
-  await loadStatusTugas();
-
-  renderTugas();
-
-  renderDashboard();
 
 }
 
 
-/* =================================================
-   RENDER
-   ================================================= */
+/* =========================================================
+   RENDER ALL
+========================================================= */
 
 function renderAll() {
+
+  renderSettings();
 
   renderDashboard();
 
@@ -1111,9 +2078,72 @@ function renderAll() {
 }
 
 
-/* =================================================
+/* =========================================================
+   SETTINGS / ZOOM
+========================================================= */
+
+function renderSettings() {
+
+  const area =
+    document.getElementById(
+      "zoomArea"
+    );
+
+  const zoom =
+    data.pengaturan &&
+    data.pengaturan.Link_Zoom
+      ? data.pengaturan.Link_Zoom
+      : "";
+
+
+  if (!zoom) {
+
+    area.innerHTML = "";
+
+    return;
+
+  }
+
+
+  area.innerHTML = `
+
+    <div class="zoom-card">
+
+      <div class="zoom-title">
+        🔵 Zoom Kuliah
+      </div>
+
+      <div class="zoom-link">
+        Link Zoom Perkuliahan
+      </div>
+
+      <a
+        class="btn btn-primary"
+        href="${escapeHtml(zoom)}"
+        target="_blank">
+
+        🚀 Masuk Zoom
+
+      </a>
+
+      <button
+        class="btn btn-secondary"
+        onclick="copyLink('${escapeJs(zoom)}')">
+
+        📋 Salin Link
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
    DASHBOARD
-   ================================================= */
+========================================================= */
 
 function renderDashboard() {
 
@@ -1146,53 +2176,93 @@ function renderDashboard() {
   document.getElementById(
     "jumlahBelum"
   ).textContent =
-    data.tugas.length - selesai;
+    data.tugas.length -
+    selesai;
 
 
-  renderDashboardAbsen();
+  renderDashboardJadwal();
 
   renderDashboardTugas();
+
+  renderDashboardAbsen();
 
 }
 
 
-/* =================================================
-   DASHBOARD ABSEN
-   ================================================= */
+/* =========================================================
+   DASHBOARD JADWAL
+========================================================= */
 
-function renderDashboardAbsen() {
+function renderDashboardJadwal() {
 
   const box =
     document.getElementById(
-      "dashboardAbsen"
+      "dashboardJadwal"
     );
 
 
-  if (!data.absensi.length) {
+  const list =
+    data.jadwal.slice(0, 2);
+
+
+  if (!list.length) {
 
     box.innerHTML =
-      "<p class='muted'>Belum ada link absen.</p>";
+      `<div class="empty">
+        Belum ada jadwal.
+      </div>`;
 
     return;
 
   }
 
 
-  const item =
-    data.absensi
-      .filter(x => x.Aktif === true)
-      .slice(-1)[0];
-
-
   box.innerHTML =
-    absenCard(item);
+    list.map(j => {
+
+      const mk =
+        findMK(j.ID_MK);
+
+      return `
+
+        <div class="schedule-item">
+
+          <div class="schedule-time">
+            ${escapeHtml(j.Hari)}
+            •
+            ${escapeHtml(j.Jam_Mulai)}
+            -
+            ${escapeHtml(j.Jam_Selesai)}
+          </div>
+
+          <div class="schedule-name">
+            ${escapeHtml(
+              mk
+                ? mk.Mata_Kuliah
+                : j.ID_MK
+            )}
+          </div>
+
+          <div class="schedule-lecturer">
+            ${escapeHtml(
+              mk
+                ? mk.Dosen || ""
+                : ""
+            )}
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
 
 }
 
 
-/* =================================================
+/* =========================================================
    DASHBOARD TUGAS
-   ================================================= */
+========================================================= */
 
 function renderDashboardTugas() {
 
@@ -1203,13 +2273,21 @@ function renderDashboardTugas() {
 
 
   const tasks =
-    data.tugas.slice(0, 5);
+    [...data.tugas]
+      .sort(
+        (a,b) =>
+          parseDateValue(a.Deadline) -
+          parseDateValue(b.Deadline)
+      )
+      .slice(0, 3);
 
 
   if (!tasks.length) {
 
     box.innerHTML =
-      "<p class='muted'>Belum ada tugas.</p>";
+      `<div class="empty">
+        Belum ada tugas.
+      </div>`;
 
     return;
 
@@ -1217,16 +2295,88 @@ function renderDashboardTugas() {
 
 
   box.innerHTML =
-    tasks
-      .map(taskCard)
-      .join("");
+    tasks.map(task => {
+
+      const mk =
+        findMK(task.ID_MK);
+
+      return `
+
+        <div class="schedule-item">
+
+          <div class="schedule-name">
+            ${escapeHtml(
+              task.Nama_Tugas
+            )}
+          </div>
+
+          <div class="schedule-lecturer">
+            ${escapeHtml(
+              mk
+                ? mk.Mata_Kuliah
+                : task.ID_MK
+            )}
+          </div>
+
+          <div class="deadline">
+            ⏰ ${escapeHtml(
+              task.Deadline || "-"
+            )}
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
 
 }
 
 
-/* =================================================
+/* =========================================================
+   DASHBOARD ABSEN
+========================================================= */
+
+function renderDashboardAbsen() {
+
+  const box =
+    document.getElementById(
+      "dashboardAbsen"
+    );
+
+
+  const list =
+    data.absensi
+      .filter(
+        x =>
+          x.Aktif === true ||
+          String(x.Aktif).toUpperCase() === "TRUE"
+      )
+      .slice(-3)
+      .reverse();
+
+
+  if (!list.length) {
+
+    box.innerHTML =
+      `<div class="empty">
+        Belum ada link absen.
+      </div>`;
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    list.map(absenCard).join("");
+
+}
+
+
+/* =========================================================
    JADWAL
-   ================================================= */
+========================================================= */
 
 function renderJadwal() {
 
@@ -1250,16 +2400,32 @@ function renderJadwal() {
 
     const list =
       data.jadwal
-        .filter(x =>
-          x.Hari === day
+        .filter(
+          x =>
+            String(x.Hari).trim() ===
+            day
+        )
+        .sort(
+          (a,b) =>
+            String(a.Jam_Mulai)
+              .localeCompare(
+                String(b.Jam_Mulai)
+              )
         );
 
 
     if (!list.length) return;
 
 
-    html +=
-      `<h3>${day}</h3>`;
+    html += `
+
+      <div class="day-card">
+
+        <div class="day-header">
+          📅 ${day}
+        </div>
+
+    `;
 
 
     list.forEach(j => {
@@ -1269,42 +2435,70 @@ function renderJadwal() {
 
 
       html += `
-        <div class="card">
 
-          <strong>
-            ${j.Jam_Mulai}
+        <div class="schedule-item">
+
+          <div class="schedule-time">
+            ${escapeHtml(j.Jam_Mulai)}
             –
-            ${j.Jam_Selesai}
-          </strong>
+            ${escapeHtml(j.Jam_Selesai)}
+          </div>
 
-          <br>
+          <div class="schedule-name">
+            ${escapeHtml(
+              mk
+                ? mk.Mata_Kuliah
+                : j.ID_MK
+            )}
+          </div>
 
-          ${mk
-            ? mk.Mata_Kuliah
-            : j.ID_MK}
+          <div class="schedule-lecturer">
+            ${escapeHtml(
+              mk
+                ? mk.Dosen || ""
+                : ""
+            )}
+          </div>
 
-          <br>
-
-          <span class="muted">
-            ${mk ? mk.Dosen : ""}
-          </span>
+          ${
+            j.Keterangan
+              ? `
+                <div class="muted small"
+                     style="margin-top:7px;">
+                  ${escapeHtml(j.Keterangan)}
+                </div>
+              `
+              : ""
+          }
 
         </div>
+
       `;
 
     });
 
+
+    html += `
+      </div>
+    `;
+
   });
 
 
-  box.innerHTML = html;
+  box.innerHTML =
+    html ||
+    `<div class="card">
+      <div class="empty">
+        Belum ada jadwal.
+      </div>
+    </div>`;
 
 }
 
 
-/* =================================================
+/* =========================================================
    TUGAS
-   ================================================= */
+========================================================= */
 
 function renderTugas() {
 
@@ -1317,7 +2511,9 @@ function renderTugas() {
   if (!data.tugas.length) {
 
     box.innerHTML =
-      "<p class='muted'>Belum ada tugas.</p>";
+      `<div class="card empty">
+        Belum ada tugas.
+      </div>`;
 
     return;
 
@@ -1325,7 +2521,12 @@ function renderTugas() {
 
 
   box.innerHTML =
-    data.tugas
+    [...data.tugas]
+      .sort(
+        (a,b) =>
+          parseDateValue(a.Deadline) -
+          parseDateValue(b.Deadline)
+      )
       .map(taskCard)
       .join("");
 
@@ -1337,37 +2538,81 @@ function taskCard(task) {
   const status =
     getTaskStatus(task.ID);
 
-
   const done =
     status === "SELESAI";
-
 
   const mk =
     findMK(task.ID_MK);
 
+  const countdown =
+    deadlineText(task.Deadline);
+
 
   return `
+
     <div class="card task-card
       ${done ? "done" : "todo"}">
 
-      <h3>
-        ${task.Nama_Tugas}
-      </h3>
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        flex-wrap:wrap;">
 
-      <div class="muted">
-        ${mk ? mk.Mata_Kuliah : task.ID_MK}
+        <div>
+
+          <h3>
+            ${escapeHtml(
+              task.Nama_Tugas
+            )}
+          </h3>
+
+          <div class="muted">
+            ${escapeHtml(
+              mk
+                ? mk.Mata_Kuliah
+                : task.ID_MK
+            )}
+          </div>
+
+        </div>
+
+        <div class="deadline
+          ${
+            countdown.includes("Lewat")
+              ? "deadline-danger"
+              : "deadline-safe"
+          }">
+
+          ${escapeHtml(countdown)}
+
+        </div>
+
       </div>
 
-      <p>
-        ${task.Deskripsi || ""}
+
+      ${
+        task.Deskripsi
+          ? `
+            <p>
+              ${escapeHtml(
+                task.Deskripsi
+              )}
+            </p>
+          `
+          : ""
+      }
+
+
+      <p class="small muted">
+
+        Deadline:
+        ${escapeHtml(
+          task.Deadline || "-"
+        )}
+
       </p>
 
-      <p>
-        ⏰ Deadline:
-        <strong>
-          ${task.Deadline}
-        </strong>
-      </p>
 
       <p class="${
         done
@@ -1383,46 +2628,58 @@ function taskCard(task) {
 
       </p>
 
-      <button
-        class="${
-          done
-            ? "btn-warning"
-            : "btn-success"
-        }"
-        onclick="toggleTask('${task.ID}')">
+
+      <div style="
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;">
+
+        <button
+          class="${
+            done
+              ? "btn-warning"
+              : "btn-success"
+          }"
+          onclick="toggleTask('${escapeJs(task.ID)}')">
+
+          ${
+            done
+              ? "↩ Tandai Belum"
+              : "✓ Sudah Dikerjakan"
+          }
+
+        </button>
+
 
         ${
-          done
-            ? "Tandai Belum"
-            : "✓ Sudah Dikerjakan"
+          task.Link_Tugas
+            ? `
+              <a
+                class="btn btn-primary"
+                target="_blank"
+                href="${escapeHtml(
+                  task.Link_Tugas
+                )}">
+
+                🔗 Buka Tugas
+
+              </a>
+            `
+            : ""
         }
 
-      </button>
-
-      ${
-        task.Link_Tugas
-          ? `
-            <a
-              class="btn btn-primary"
-              target="_blank"
-              href="${task.Link_Tugas}">
-
-              Buka Tugas
-
-            </a>
-          `
-          : ""
-      }
+      </div>
 
     </div>
+
   `;
 
 }
 
 
-/* =================================================
+/* =========================================================
    ABSEN
-   ================================================= */
+========================================================= */
 
 function renderAbsen() {
 
@@ -1432,10 +2689,23 @@ function renderAbsen() {
     );
 
 
-  if (!data.absensi.length) {
+  const list =
+    data.absensi
+      .filter(
+        x =>
+          x.Aktif === true ||
+          String(x.Aktif).toUpperCase() === "TRUE"
+      )
+      .slice()
+      .reverse();
+
+
+  if (!list.length) {
 
     box.innerHTML =
-      "<p class='muted'>Belum ada link absen.</p>";
+      `<div class="card empty">
+        Belum ada link absensi.
+      </div>`;
 
     return;
 
@@ -1443,11 +2713,7 @@ function renderAbsen() {
 
 
   box.innerHTML =
-    data.absensi
-      .filter(x =>
-        x.Aktif === true
-      )
-      .reverse()
+    list
       .map(absenCard)
       .join("");
 
@@ -1461,68 +2727,90 @@ function absenCard(item) {
 
 
   return `
+
     <div class="card absen-card">
 
-      <h3>
-        🔴 ${item.Judul_Absen}
-      </h3>
+      <div class="absen-title">
 
-      <strong>
-        ${mk
-          ? mk.Mata_Kuliah
-          : item.ID_MK}
-      </strong>
+        🔴 ${escapeHtml(
+          item.Judul_Absen
+        )}
 
-      <p class="muted">
+      </div>
 
-        ${item.Tanggal}
+
+      <div style="margin-top:7px;">
+        ${escapeHtml(
+          mk
+            ? mk.Mata_Kuliah
+            : item.ID_MK
+        )}
+      </div>
+
+
+      <div class="absen-info">
+
+        📅 ${escapeHtml(
+          item.Tanggal || "-"
+        )}
 
         ${
           item.Pertemuan
             ? " • Pertemuan " +
-              item.Pertemuan
+              escapeHtml(item.Pertemuan)
             : ""
         }
 
-      </p>
+      </div>
+
 
       ${
         item.Deadline_Absen
           ? `
-            <p>
+            <div class="small"
+                 style="margin-bottom:12px;">
+
               ⏰ Deadline:
-              ${item.Deadline_Absen}
-            </p>
+              ${escapeHtml(
+                item.Deadline_Absen
+              )}
+
+            </div>
           `
           : ""
       }
 
+
       <a
         class="btn btn-primary"
-        href="${item.Link_Absen}"
+        href="${escapeHtml(
+          item.Link_Absen
+        )}"
         target="_blank">
 
         🔗 ABSEN SEKARANG
 
       </a>
 
+
       <button
         class="btn btn-success"
-        onclick="copyLink('${item.Link_Absen}')">
+        onclick="copyLink('${escapeJs(item.Link_Absen)}')">
 
         📋 Salin Link
 
       </button>
 
     </div>
+
   `;
 
 }
 
 
-/* =================================================
+/* =========================================================
    MATERI
-   ================================================= */
+========================================================= */
 
 function renderMateri() {
 
@@ -1535,7 +2823,9 @@ function renderMateri() {
   if (!data.materi.length) {
 
     box.innerHTML =
-      "<p class='muted'>Belum ada materi.</p>";
+      `<div class="card empty">
+        Belum ada materi.
+      </div>`;
 
     return;
 
@@ -1544,77 +2834,121 @@ function renderMateri() {
 
   box.innerHTML =
     data.materi
-      .map(m => {
-
-        const mk =
-          findMK(m.ID_MK);
-
-
-        return `
-          <div class="card">
-
-            <h3>
-              ${m.Judul}
-            </h3>
-
-            <div class="muted">
-              ${mk
-                ? mk.Mata_Kuliah
-                : m.ID_MK}
-            </div>
-
-            <p>
-              Pertemuan:
-              ${m.Pertemuan || "-"}
-            </p>
-
-            <a
-              class="btn btn-primary"
-              target="_blank"
-              href="${m.Link}">
-
-              📚 Buka Materi
-
-            </a>
-
-          </div>
-        `;
-
-      })
+      .map(materialCard)
       .join("");
 
 }
 
 
-/* =================================================
+function materialCard(m) {
+
+  const mk =
+    findMK(m.ID_MK);
+
+
+  return `
+
+    <div class="card material-card">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:10px;">
+
+        <h3>
+          ${escapeHtml(
+            m.Judul
+          )}
+        </h3>
+
+        <span class="material-type">
+          ${escapeHtml(
+            m.Jenis || "Link"
+          )}
+        </span>
+
+      </div>
+
+
+      <div class="muted">
+        ${escapeHtml(
+          mk
+            ? mk.Mata_Kuliah
+            : m.ID_MK
+        )}
+      </div>
+
+
+      <p class="small">
+
+        Pertemuan:
+        ${escapeHtml(
+          m.Pertemuan || "-"
+        )}
+
+      </p>
+
+
+      ${
+        m.Keterangan
+          ? `
+            <p class="muted small">
+              ${escapeHtml(
+                m.Keterangan
+              )}
+            </p>
+          `
+          : ""
+      }
+
+
+      <a
+        class="btn btn-primary"
+        href="${escapeHtml(
+          m.Link
+        )}"
+        target="_blank">
+
+        📚 Buka Materi
+
+      </a>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
    SELECT MATA KULIAH
-   ================================================= */
+========================================================= */
 
 function fillMKSelects() {
 
-  const selects = [
+  const ids = [
     "taskMK",
     "absenMK",
     "materiMK"
   ];
 
 
-  selects.forEach(id => {
+  ids.forEach(id => {
 
     const select =
       document.getElementById(id);
-
 
     if (!select) return;
 
 
     select.innerHTML =
       data.mataKuliah
-        .map(m => `
-          <option value="${m.ID}">
-            ${m.Mata_Kuliah}
-          </option>
-        `)
+        .map(
+          m =>
+            `<option value="${escapeHtml(m.ID)}">
+              ${escapeHtml(m.Mata_Kuliah)}
+            </option>`
+        )
         .join("");
 
   });
@@ -1622,11 +2956,14 @@ function fillMKSelects() {
 }
 
 
-/* =================================================
-   SIMPAN TUGAS
-   ================================================= */
+/* =========================================================
+   SAVE TASK
+========================================================= */
 
 async function saveTask() {
+
+  if (!currentUser) return;
+
 
   const body =
     new URLSearchParams({
@@ -1673,39 +3010,60 @@ async function saveTask() {
     });
 
 
-  const response =
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-        body
-      }
+  try {
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+          body
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    showToast(
+      result.message,
+      result.success
+        ? "success"
+        : "error"
     );
 
 
-  const result =
-    await response.json();
+    if (result.success) {
 
+      closeModal("taskModal");
 
-  alert(result.message);
+      clearTaskForm();
 
+      await loadData();
 
-  if (result.success) {
+    }
 
-    closeModal("taskModal");
+  } catch (error) {
 
-    await loadData();
+    showToast(
+      "Gagal menyimpan tugas.",
+      "error"
+    );
 
   }
 
 }
 
 
-/* =================================================
-   SIMPAN ABSEN
-   ================================================= */
+/* =========================================================
+   SAVE ABSEN
+========================================================= */
 
 async function saveAbsen() {
+
+  if (!currentUser) return;
+
 
   const body =
     new URLSearchParams({
@@ -1757,39 +3115,60 @@ async function saveAbsen() {
     });
 
 
-  const response =
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-        body
-      }
+  try {
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+          body
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    showToast(
+      result.message,
+      result.success
+        ? "success"
+        : "error"
     );
 
 
-  const result =
-    await response.json();
+    if (result.success) {
 
+      closeModal("absenModal");
 
-  alert(result.message);
+      clearAbsenForm();
 
+      await loadData();
 
-  if (result.success) {
+    }
 
-    closeModal("absenModal");
+  } catch (error) {
 
-    await loadData();
+    showToast(
+      "Gagal menyimpan link absen.",
+      "error"
+    );
 
   }
 
 }
 
 
-/* =================================================
-   SIMPAN MATERI
-   ================================================= */
+/* =========================================================
+   SAVE MATERIAL
+========================================================= */
 
 async function saveMateri() {
+
+  if (!currentUser) return;
+
 
   const body =
     new URLSearchParams({
@@ -1836,63 +3215,126 @@ async function saveMateri() {
     });
 
 
-  const response =
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-        body
-      }
+  try {
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+          body
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    showToast(
+      result.message,
+      result.success
+        ? "success"
+        : "error"
     );
 
 
-  const result =
-    await response.json();
+    if (result.success) {
 
+      closeModal("materiModal");
 
-  alert(result.message);
+      clearMateriForm();
 
+      await loadData();
 
-  if (result.success) {
+    }
 
-    closeModal("materiModal");
+  } catch (error) {
 
-    await loadData();
+    showToast(
+      "Gagal menyimpan materi.",
+      "error"
+    );
 
   }
 
 }
 
 
-/* =================================================
-   UTILITAS
-   ================================================= */
+/* =========================================================
+   CLEAR FORM
+========================================================= */
 
-function findMK(id) {
+function clearTaskForm() {
 
-  return data.mataKuliah.find(
-    m =>
-      String(m.ID) ===
-      String(id)
-  );
+  document.getElementById(
+    "taskNama"
+  ).value = "";
+
+  document.getElementById(
+    "taskDeskripsi"
+  ).value = "";
+
+  document.getElementById(
+    "taskDeadline"
+  ).value = "";
+
+  document.getElementById(
+    "taskLink"
+  ).value = "";
+
+}
+
+
+function clearAbsenForm() {
+
+  document.getElementById(
+    "absenTanggal"
+  ).value = "";
+
+  document.getElementById(
+    "absenPertemuan"
+  ).value = "";
+
+  document.getElementById(
+    "absenJudul"
+  ).value = "";
+
+  document.getElementById(
+    "absenLink"
+  ).value = "";
+
+  document.getElementById(
+    "absenDeadline"
+  ).value = "";
 
 }
 
 
-function copyLink(link) {
+function clearMateriForm() {
 
-  navigator.clipboard
-    .writeText(link)
-    .then(() => {
+  document.getElementById(
+    "materiPertemuan"
+  ).value = "";
 
-      alert(
-        "Link berhasil disalin."
-      );
+  document.getElementById(
+    "materiJudul"
+  ).value = "";
 
-    });
+  document.getElementById(
+    "materiLink"
+  ).value = "";
+
+  document.getElementById(
+    "materiKeterangan"
+  ).value = "";
 
 }
 
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function showTab(name) {
 
@@ -1919,8 +3361,108 @@ function showTab(name) {
     .getElementById(name)
     .classList.remove("hidden");
 
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(btn => {
+
+      btn.classList.remove("active");
+
+    });
+
+
+  const menu =
+    document.getElementById(
+      "menu-" + name
+    );
+
+  if (menu) {
+
+    menu.classList.add("active");
+
+  }
+
+
+  const titles = {
+
+    dashboard: [
+      "Dashboard",
+      "Ringkasan aktivitas kuliah"
+    ],
+
+    jadwal: [
+      "Jadwal Kuliah",
+      "Jadwal perkuliahan"
+    ],
+
+    tugas: [
+      "Tugas Kuliah",
+      "Daftar tugas dan deadline"
+    ],
+
+    absen: [
+      "Absen Dosen",
+      "Link absensi resmi"
+    ],
+
+    materi: [
+      "Materi Kuliah",
+      "Dokumen dan bahan perkuliahan"
+    ],
+
+    kelola: [
+      "Kelola Kuliah",
+      "Pengelolaan data perkuliahan"
+    ]
+
+  };
+
+
+  if (titles[name]) {
+
+    document.getElementById(
+      "pageTitle"
+    ).textContent =
+      titles[name][0];
+
+    document.getElementById(
+      "pageSubtitle"
+    ).textContent =
+      titles[name][1];
+
+  }
+
+
+  closeSidebar();
+
 }
 
+
+/* =========================================================
+   SIDEBAR MOBILE
+========================================================= */
+
+function toggleSidebar() {
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+function closeSidebar() {
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
 
 function openModal(id) {
 
@@ -1936,6 +3478,232 @@ function closeModal(id) {
   document
     .getElementById(id)
     .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   COPY LINK
+========================================================= */
+
+function copyLink(link) {
+
+  navigator.clipboard
+    .writeText(link)
+    .then(() => {
+
+      showToast(
+        "Link berhasil disalin.",
+        "success"
+      );
+
+    })
+    .catch(() => {
+
+      showToast(
+        "Gagal menyalin link.",
+        "error"
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message, type = "success") {
+
+  const container =
+    document.getElementById(
+      "toastContainer"
+    );
+
+
+  const toast =
+    document.createElement("div");
+
+  toast.className =
+    "toast " + type;
+
+  toast.textContent =
+    message || "Selesai.";
+
+
+  container.appendChild(toast);
+
+
+  setTimeout(() => {
+
+    toast.remove();
+
+  }, 3500);
+
+}
+
+
+/* =========================================================
+   DEADLINE
+========================================================= */
+
+function parseDateValue(value) {
+
+  if (!value) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+
+  const d =
+    new Date(
+      String(value).replace(
+        " ",
+        "T"
+      )
+    );
+
+
+  if (isNaN(d.getTime())) {
+
+    return Number.MAX_SAFE_INTEGER;
+
+  }
+
+
+  return d.getTime();
+
+}
+
+
+function deadlineText(value) {
+
+  const target =
+    parseDateValue(value);
+
+
+  if (
+    target ===
+    Number.MAX_SAFE_INTEGER
+  ) {
+
+    return "Deadline tidak tersedia";
+
+  }
+
+
+  const now =
+    Date.now();
+
+  const diff =
+    target - now;
+
+
+  if (diff < 0) {
+
+    return "⚠️ Deadline Lewat";
+
+  }
+
+
+  const minutes =
+    Math.floor(
+      diff / 60000
+    );
+
+
+  const days =
+    Math.floor(
+      minutes / 1440
+    );
+
+
+  const hours =
+    Math.floor(
+      (minutes % 1440) / 60
+    );
+
+
+  if (days > 0) {
+
+    return "⏳ " +
+      days +
+      " hari lagi";
+
+  }
+
+
+  if (hours > 0) {
+
+    return "⏳ " +
+      hours +
+      " jam lagi";
+
+  }
+
+
+  return "⏳ " +
+    Math.max(minutes, 0) +
+    " menit lagi";
+
+}
+
+
+/* =========================================================
+   FIND MK
+========================================================= */
+
+function findMK(id) {
+
+  return data.mataKuliah.find(
+    m =>
+      String(m.ID) ===
+      String(id)
+  );
+
+}
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+  if (value === null ||
+      value === undefined) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeJs(value) {
+
+  if (value === null ||
+      value === undefined) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
 
 }
 
