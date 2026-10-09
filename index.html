@@ -705,6 +705,18 @@ label {
 <body>
 
 <!-- =========================================================
+     REKAP IZIN PUBLIK (KHUSUS LINK BAGI DOSEN)
+========================================================= -->
+<div id="publicReport" class="hidden" style="max-width:900px;margin:28px auto;padding:18px;color:#e5e7eb;">
+  <div class="card">
+    <h2>📋 Rekap Izin Perkuliahan</h2>
+    <p id="publicReportMeta" class="muted">Memuat rekap izin...</p>
+    <div id="publicReportContent" class="loading">Mengambil data...</div>
+    <p class="small muted" style="margin-top:18px;">Laporan ini hanya menampilkan nama mahasiswa, jenis izin, dan status. Alasan pribadi tidak ditampilkan pada tautan publik.</p>
+  </div>
+</div>
+
+<!-- =========================================================
      LOGIN
 ========================================================= -->
 
@@ -814,6 +826,14 @@ label {
         onclick="showTab('absen')">
 
         📌 Absen Dosen
+
+      </button>
+
+      <button
+        id="menu-izin"
+        onclick="showTab('izin')">
+
+        📝 Izin / Sakit
 
       </button>
 
@@ -1177,6 +1197,51 @@ label {
 
 
       <!-- =================================================
+           IZIN / SAKIT
+      ================================================= -->
+
+      <section id="izin" class="hidden">
+        <div class="card">
+          <h2>📝 Izin Tidak Mengikuti Kuliah</h2>
+          <p class="muted">Gunakan menu ini jika tidak dapat mengikuti pertemuan Zoom/kuliah. Isi tanggal, jenis izin, dan alasan. ADMIN/KETUA dapat memeriksa seluruh pengajuan.</p>
+        </div>
+        <div class="card">
+          <h3>Ajukan Izin</h3>
+          <label>Mata Kuliah</label>
+          <select id="izinMK"></select>
+          <label>Tanggal perkuliahan</label>
+          <input id="izinTanggal" type="date" required>
+          <label>Jenis</label>
+          <select id="izinJenis">
+            <option value="IZIN">Izin</option>
+            <option value="SAKIT">Sakit</option>
+            <option value="KEPERLUAN KELUARGA">Keperluan keluarga</option>
+            <option value="KENDALA JARINGAN">Kendala jaringan/perangkat</option>
+            <option value="LAINNYA">Lainnya</option>
+          </select>
+          <label>Alasan / keterangan</label>
+          <textarea id="izinAlasan" placeholder="Jelaskan alasan tidak dapat mengikuti kuliah..." required></textarea>
+          <button class="btn-success" id="submitIzinBtn" onclick="submitIzin()">📨 Kirim Pengajuan Izin</button>
+          <p class="muted small">Status awal pengajuan adalah MENUNGGU.</p>
+        </div>
+        <div id="izinRekapTools" class="card hidden">
+          <h3>🔗 Bagikan Rekap ke Dosen</h3>
+          <p class="muted small">Pilih mata kuliah dan tanggal perkuliahan, lalu buat tautan baca-saja. Tautan dapat dibuka tanpa login.</p>
+          <label for="rekapIzinMK">Mata Kuliah</label>
+          <select id="rekapIzinMK"></select>
+          <label for="rekapIzinTanggal">Tanggal Perkuliahan</label>
+          <input id="rekapIzinTanggal" type="date">
+          <button class="btn-primary" onclick="copyPublicIzinLink()">🔗 Salin Link Rekap untuk Dosen</button>
+          <p id="rekapIzinLinkStatus" class="small muted" aria-live="polite"></p>
+        </div>
+        <div class="card">
+          <h3 id="izinListTitle">Riwayat Izin Saya</h3>
+          <div id="izinList"><div class="loading">Memuat riwayat izin...</div></div>
+        </div>
+      </section>
+
+
+      <!-- =================================================
            MATERI
       ================================================= -->
 
@@ -1497,7 +1562,7 @@ label {
 ========================================================= */
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxKG4COO5k_2DDjLf4beOyClYwgp7O926aBF4tYbtoxyd4hXtadLRi0Yeihisz-o0W_ig/exec";
+  "https://script.google.com/macros/s/AKfycbwYBZiJAGY3Ym2SdMFEkZXo5I2yLhTMhPSI0r2v01UntDpdrnRwPzi3CJjovb_uHo7dPw/exec";
 
 
 /* =========================================================
@@ -1516,6 +1581,7 @@ let data = {
 };
 
 let statusTugas = [];
+let dataIzin = [];
 
 let currentUser = null;
 
@@ -1532,6 +1598,15 @@ document.addEventListener(
 
 async function start() {
 
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("rekapIzin") === "1") {
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("app").classList.add("hidden");
+    document.getElementById("publicReport").classList.remove("hidden");
+    await loadPublicIzinReport(query.get("mk") || "", query.get("tanggal") || "");
+    return;
+  }
+
   loadSession();
 
   await loadData();
@@ -1541,6 +1616,7 @@ async function start() {
     showApp();
 
     await loadStatusTugas();
+    await loadIzin();
 
     renderAll();
 
@@ -1691,6 +1767,7 @@ function logout() {
   currentUser = null;
 
   statusTugas = [];
+  dataIzin = [];
 
   document
     .getElementById("loginUser")
@@ -1857,6 +1934,7 @@ async function login() {
 
 
     await loadStatusTugas();
+    await loadIzin();
 
     renderAll();
 
@@ -2799,6 +2877,153 @@ function absenCard(item) {
 
 
 /* =========================================================
+   IZIN / SAKIT
+========================================================= */
+
+async function loadIzin() {
+  if (!currentUser) return;
+  const box = document.getElementById("izinList");
+  if (box) box.innerHTML = '<div class="loading">Memuat riwayat izin...</div>';
+  try {
+    const role = String(currentUser.Role || "").toUpperCase();
+    const action = ["ADMIN", "KETUA"].includes(role) ? "daftarIzin" : "izinSaya";
+    const params = new URLSearchParams({ action, user_id: currentUser.ID, pin: currentUser.PIN });
+    const response = await fetch(API_URL + "?" + params.toString());
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || "Gagal mengambil data izin.");
+    dataIzin = result.data || [];
+    renderIzin();
+  } catch (error) {
+    console.error("Gagal memuat izin:", error);
+    if (box) box.innerHTML = '<div class="empty">Tidak dapat memuat izin. Pastikan pembaruan Apps Script sudah dilakukan.</div>';
+  }
+}
+
+function populateIzinReportCourses() {
+  const select = document.getElementById("rekapIzinMK");
+  if (!select) return;
+  const current = select.value;
+  const options = data.mataKuliah.map(m => `<option value="${escapeHtml(m.ID)}">${escapeHtml(m.Mata_Kuliah || m.Nama_MK || m.ID)}</option>`).join("");
+  select.innerHTML = `<option value="">-- Pilih Mata Kuliah --</option>${options}`;
+  if (current && data.mataKuliah.some(m => String(m.ID) === current)) select.value = current;
+}
+
+function copyPublicIzinLink() {
+  const mk = document.getElementById("rekapIzinMK").value;
+  const tanggal = document.getElementById("rekapIzinTanggal").value;
+  const status = document.getElementById("rekapIzinLinkStatus");
+  if (!mk || !tanggal) {
+    status.textContent = "Pilih mata kuliah dan tanggal terlebih dahulu.";
+    return;
+  }
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("rekapIzin", "1");
+  url.searchParams.set("mk", mk);
+  url.searchParams.set("tanggal", tanggal);
+  const link = url.toString();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      status.textContent = "Link rekap berhasil disalin. Silakan kirim ke dosen.";
+    }).catch(() => {
+      status.textContent = link;
+    });
+  } else {
+    status.textContent = link;
+    window.prompt("Salin link rekap ini:", link);
+  }
+}
+
+async function loadPublicIzinReport(mk, tanggal) {
+  const meta = document.getElementById("publicReportMeta");
+  const content = document.getElementById("publicReportContent");
+  if (!mk || !tanggal) {
+    meta.textContent = "Link rekap belum lengkap.";
+    content.innerHTML = "Tautan harus memuat mata kuliah dan tanggal perkuliahan. Minta Ketua/Admin membuat ulang link rekap.";
+    return;
+  }
+  try {
+    const params = new URLSearchParams({ action: "rekapIzinPublik", mk, tanggal });
+    const response = await fetch(API_URL + "?" + params.toString());
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || "Gagal memuat rekap.");
+    meta.textContent = `${result.mataKuliah || mk} · Tanggal perkuliahan: ${tanggal}`;
+    const rows = result.data || [];
+    if (!rows.length) {
+      content.innerHTML = '<div class="empty">Tidak ada pengajuan izin untuk mata kuliah dan tanggal tersebut.</div>';
+      return;
+    }
+    content.innerHTML = `<p><strong>Jumlah pengajuan: ${rows.length} mahasiswa</strong></p><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:10px;border-bottom:1px solid #475569;">No.</th><th style="text-align:left;padding:10px;border-bottom:1px solid #475569;">Nama Mahasiswa</th><th style="text-align:left;padding:10px;border-bottom:1px solid #475569;">Jenis</th><th style="text-align:left;padding:10px;border-bottom:1px solid #475569;">Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td style="padding:10px;border-bottom:1px solid #334155;">${i+1}</td><td style="padding:10px;border-bottom:1px solid #334155;">${escapeHtml(r.Nama || "-")}</td><td style="padding:10px;border-bottom:1px solid #334155;">${escapeHtml(r.Jenis_Izin || "IZIN")}</td><td style="padding:10px;border-bottom:1px solid #334155;">${escapeHtml(r.Status || "MENUNGGU")}</td></tr>`).join("")}</tbody></table></div>`;
+  } catch (error) {
+    meta.textContent = "Rekap tidak dapat dimuat.";
+    content.textContent = error.message || "Periksa koneksi dan pembaruan Apps Script.";
+  }
+}
+
+function renderIzin() {
+  const box = document.getElementById("izinList");
+  const title = document.getElementById("izinListTitle");
+  if (!box || !currentUser) return;
+  const manager = ["ADMIN", "KETUA"].includes(String(currentUser.Role || "").toUpperCase());
+  const tools = document.getElementById("izinRekapTools");
+  if (tools) tools.classList.toggle("hidden", !manager);
+  if (manager) populateIzinReportCourses();
+  if (title) title.textContent = manager ? "Semua Pengajuan Izin Mahasiswa" : "Riwayat Izin Saya";
+  if (!dataIzin.length) {
+    box.innerHTML = '<div class="empty">Belum ada pengajuan izin.</div>';
+    return;
+  }
+  box.innerHTML = dataIzin.slice().reverse().map(item => {
+    const status = String(item.Status || "MENUNGGU").toUpperCase();
+    const statusColor = status === "DISETUJUI" ? "#4ade80" : status === "DITOLAK" ? "#f87171" : "#fbbf24";
+    const mk = findMK(item.ID_MK);
+    const statusButtons = manager ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><button class="btn-success" onclick="updateIzinStatus('${escapeJs(item.ID_Izin)}','DISETUJUI')">Setujui</button><button class="btn-danger" onclick="updateIzinStatus('${escapeJs(item.ID_Izin)}','DITOLAK')">Tolak</button></div>` : "";
+    const managerInfo = manager ? `<div class="small muted" style="margin-top:6px;">Pengaju: ${escapeHtml(item.Nama || item.ID_Pengguna || "-")}</div>` : "";
+    return `<div class="card" style="border-left:4px solid ${statusColor};"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;"><strong>${escapeHtml(item.Jenis_Izin || "IZIN")}</strong><strong style="color:${statusColor};">${escapeHtml(status)}</strong></div><div style="margin-top:8px;">${escapeHtml(mk ? mk.Mata_Kuliah : item.ID_MK || "Mata kuliah tidak disebutkan")}</div><div class="small muted" style="margin-top:5px;">Tanggal kuliah: ${escapeHtml(item.Tanggal || "-")} · Dikirim: ${escapeHtml(item.Waktu_Kirim || "-")}</div>${managerInfo}<p style="white-space:pre-wrap;">${escapeHtml(item.Alasan || "-")}</p>${item.Catatan_Ketua ? `<div class="small muted">Catatan: ${escapeHtml(item.Catatan_Ketua)}</div>` : ""}${statusButtons}</div>`;
+  }).join("");
+}
+
+async function submitIzin() {
+  if (!currentUser) return showToast("Silakan login terlebih dahulu.", "error");
+  const idMK = document.getElementById("izinMK").value;
+  const tanggal = document.getElementById("izinTanggal").value;
+  const jenis = document.getElementById("izinJenis").value;
+  const alasan = document.getElementById("izinAlasan").value.trim();
+  if (!idMK || !tanggal || !alasan) return showToast("Mata kuliah, tanggal, dan alasan wajib diisi.", "error");
+  const btn = document.getElementById("submitIzinBtn");
+  btn.disabled = true; btn.textContent = "Mengirim...";
+  try {
+    const body = new URLSearchParams({ action: "addIzin", user_id: currentUser.ID, pin: currentUser.PIN, id_mk: idMK, tanggal, jenis_izin: jenis, alasan });
+    const response = await fetch(API_URL, { method: "POST", body });
+    const result = await response.json();
+    showToast(result.message || (result.success ? "Izin berhasil dikirim." : "Pengajuan gagal."), result.success ? "success" : "error");
+    if (result.success) {
+      document.getElementById("izinTanggal").value = "";
+      document.getElementById("izinAlasan").value = "";
+      await loadIzin();
+    }
+  } catch (error) {
+    console.error(error); showToast("Gagal mengirim izin. Periksa deployment Apps Script.", "error");
+  } finally { btn.disabled = false; btn.textContent = "📨 Kirim Pengajuan Izin"; }
+}
+
+async function updateIzinStatus(idIzin, status) {
+  if (!currentUser || !["ADMIN", "KETUA"].includes(String(currentUser.Role || "").toUpperCase())) return;
+  let catatan = "";
+  if (status === "DITOLAK") catatan = prompt("Catatan penolakan (boleh dikosongkan):") || "";
+  try {
+    const body = new URLSearchParams({ action: "updateIzin", user_id: currentUser.ID, pin: currentUser.PIN, id_izin: idIzin, status, catatan });
+    const response = await fetch(API_URL, { method: "POST", body });
+    const result = await response.json();
+    showToast(result.message || (result.success ? "Status izin diperbarui." : "Gagal memperbarui status."), result.success ? "success" : "error");
+    if (result.success) await loadIzin();
+  } catch (error) { console.error(error); showToast("Gagal memperbarui status izin.", "error"); }
+}
+
+
+
+/* =========================================================
    MATERI
 ========================================================= */
 
@@ -2919,7 +3144,8 @@ function fillMKSelects() {
   const ids = [
     "taskMK",
     "absenMK",
-    "materiMK"
+    "materiMK",
+    "izinMK"
   ];
 
 
@@ -3333,6 +3559,7 @@ function showTab(name) {
     "jadwal",
     "tugas",
     "absen",
+    "izin",
     "materi",
     "kelola"
   ];
@@ -3393,6 +3620,11 @@ function showTab(name) {
     absen: [
       "Absen Dosen",
       "Link absensi resmi"
+    ],
+
+    izin: [
+      "Izin / Sakit",
+      "Pengajuan dan riwayat izin perkuliahan"
     ],
 
     materi: [
