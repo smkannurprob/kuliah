@@ -1655,39 +1655,29 @@ async function loadData() {
 
 function loadSession() {
 
-  const saved =
-    localStorage.getItem(
-      "kuliah_user"
-    );
-
-  if (!saved) return;
-
+  // Keamanan: hapus sesi lama dari versi sebelumnya.
+  // Aplikasi selalu meminta login ulang saat halaman dibuka.
   try {
-
-    currentUser =
-      JSON.parse(saved);
-
-    updateUserUI();
-
+    localStorage.removeItem("kuliah_user");
   } catch (error) {
-
-    localStorage.removeItem(
-      "kuliah_user"
-    );
-
-    currentUser = null;
-
+    console.warn("Tidak dapat membersihkan sesi lama:", error);
   }
+
+  currentUser = null;
+  statusTugas = [];
 
 }
 
 
 function saveSession() {
 
-  localStorage.setItem(
-    "kuliah_user",
-    JSON.stringify(currentUser)
-  );
+  // Jangan simpan pengguna atau PIN ke localStorage.
+  // Sesi hanya hidup selama halaman ini masih terbuka.
+  try {
+    localStorage.removeItem("kuliah_user");
+  } catch (error) {
+    console.warn("Tidak dapat membersihkan sesi:", error);
+  }
 
 }
 
